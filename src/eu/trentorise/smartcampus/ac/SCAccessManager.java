@@ -1,8 +1,8 @@
 package eu.trentorise.smartcampus.ac;
 
-import android.app.Activity;
+import android.content.Context;
 
 public interface SCAccessManager {
 
-	public void getAuthToken(Activity caller, AuthListener callback);
+	public String getAuthToken(Context context, String authority, AuthListener listener);
 }

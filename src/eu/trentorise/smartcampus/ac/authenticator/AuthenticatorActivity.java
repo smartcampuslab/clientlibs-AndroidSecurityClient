@@ -38,7 +38,11 @@ public class AuthenticatorActivity  extends AccountAuthenticatorActivity {
 
         Intent intent = getIntent();
         if (intent.getData() != null) {
-          mWebView.loadUrl(intent.getDataString());
+        	String url = intent.getDataString();
+        	if (intent.getStringExtra(Constants.KEY_AUTHORITY) != null) {
+        		url += (url.endsWith("/")?intent.getStringExtra(Constants.KEY_AUTHORITY):"/"+intent.getStringExtra(Constants.KEY_AUTHORITY));
+        	}
+        	mWebView.loadUrl(url);
         }
     }
 
@@ -47,14 +51,20 @@ public class AuthenticatorActivity  extends AccountAuthenticatorActivity {
 		@Override
 		public void onTokenAcquired(String token) {
 			 final Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
+		     Intent request = getIntent();
+			 
 			 mAccountManager.addAccountExplicitly(account, null, null);
-			 mAccountManager.setAuthToken(account, Constants.AUTHTOKEN_TYPE, token);
+			 mAccountManager.setAuthToken(account, request.getStringExtra(Constants.KEY_AUTHORITY), token);
 			 final Intent intent = new Intent();
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.ACCOUNT_NAME);
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Constants.ACCOUNT_TYPE);
 			 intent.putExtra(AccountManager.KEY_AUTHTOKEN, token);
 			 setAccountAuthenticatorResult(intent.getExtras());
 			 setResult(RESULT_OK, intent);
+			 
+			 Intent broadcast = new Intent(Constants.ACCOUNT_AUTHTOKEN_CHANGED_ACTION);
+			 broadcast.putExtra(Constants.KEY_AUTHORITY, request.getStringExtra(Constants.KEY_AUTHORITY));
+			 sendBroadcast(broadcast);
 			 finish();  	    		  
 		}
 

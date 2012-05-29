@@ -29,12 +29,22 @@ public class EmbeddedAuthActivity extends Activity {
         mWebView = (WebView) findViewById(R.id.webview);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.setVisibility(View.VISIBLE);
-        
-        mWebView.setWebViewClient(new SCAuthWebViewClient(new AMAuthListener()));
 
         Intent intent = getIntent();
-        if (intent.getData() != null) {
-          mWebView.loadUrl(intent.getDataString());
+        if (intent.getStringExtra(AccountManager.KEY_AUTHTOKEN) != null) {
+			 final Intent res = new Intent();
+			 res.putExtra(AccountManager.KEY_AUTHTOKEN, intent.getStringExtra(AccountManager.KEY_AUTHTOKEN));
+			 setResult(RESULT_OK, res);
+			 finish();
+        } else {
+            mWebView.setWebViewClient(new SCAuthWebViewClient(new AMAuthListener()));
+            if (intent.getData() != null) {
+            	String url = intent.getDataString();
+            	if (intent.getStringExtra(Constants.KEY_AUTHORITY) != null) {
+            		url += (url.endsWith("/")?intent.getStringExtra(Constants.KEY_AUTHORITY):"/"+intent.getStringExtra(Constants.KEY_AUTHORITY));
+            	}
+              mWebView.loadUrl(url);
+            }
         }
     }
 
@@ -43,9 +53,13 @@ public class EmbeddedAuthActivity extends Activity {
 		@Override
 		public void onTokenAcquired(String token) {
 			 final Intent intent = new Intent();
-			 getSharedPreferences(Constants.ACCOUNT_TYPE,Context.MODE_PRIVATE).edit().putString(AccountManager.KEY_AUTHTOKEN, token).commit();
+			 getSharedPreferences(Constants.ACCOUNT_TYPE,Context.MODE_PRIVATE).edit().putString(getIntent().getStringExtra(Constants.KEY_AUTHORITY), token).commit();
 			 intent.putExtra(AccountManager.KEY_AUTHTOKEN, token);
 			 setResult(RESULT_OK, intent);
+			 
+			 Intent broadcast = new Intent(Constants.ACCOUNT_AUTHTOKEN_CHANGED_ACTION);
+			 broadcast.putExtra(Constants.KEY_AUTHORITY, getIntent().getStringExtra(Constants.KEY_AUTHORITY));
+			 sendBroadcast(broadcast);
 			 finish();  	    		  
 		}
 

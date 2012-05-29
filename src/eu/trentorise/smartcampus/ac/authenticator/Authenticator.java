@@ -46,15 +46,8 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account,
-            String authTokenType, Bundle loginOptions) throws NetworkErrorException {
-        // If the caller requested an authToken type we don't support, then
-        // return an error
-        if (!authTokenType.equals(Constants.AUTHTOKEN_TYPE)) {
-            final Bundle result = new Bundle();
-            result.putString(AccountManager.KEY_ERROR_MESSAGE, "invalid authTokenType");
-            return result;
-        }
-
+            String authTokenType, Bundle loginOptions) throws NetworkErrorException 
+    {
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
@@ -66,7 +59,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public String getAuthTokenLabel(String authTokenType) {
-        return null;
+        return authTokenType;
     }
 
     @Override
