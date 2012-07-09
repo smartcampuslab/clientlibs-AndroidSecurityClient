@@ -17,7 +17,7 @@ public class AMSCAccessManager implements SCAccessManager {
 	
 	@Override
 	public String getAuthToken(Context context, String inTokenType, AuthListener listener) {
-		final String tokenType = inTokenType == null ? Constants.TOKEN_TYPE_DEFAULT : inTokenType;
+		final String tokenType = inTokenType;
 		AccountManager am = AccountManager.get(context);
 		AccountManagerFuture<Bundle> future = am.getAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE), tokenType, false, new OnTokenAcquired(listener, context, tokenType), null);
 		if (future.isDone()) {

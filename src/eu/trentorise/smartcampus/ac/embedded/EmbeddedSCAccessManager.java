@@ -27,7 +27,7 @@ public class EmbeddedSCAccessManager implements SCAccessManager {
 	
 	@Override
 	public String getAuthToken(final Context context, String inAuthority, final AuthListener listener) {
-		final String authority = inAuthority == null ? Constants.TOKEN_TYPE_DEFAULT : inAuthority;
+		final String authority = inAuthority;
 		String token = readStoredValue(context, authority);
 		if (token != null) {
 			return token;
