@@ -17,4 +17,9 @@ public class Constants {
 
 	public static final String ACCOUNT_AUTHTOKEN_CHANGED_ACTION = "eu.trentorise.smartcampus.account.AUTHTOKEN_CHANGED";
 	public static final String ACCOUNT_AUTHENTICATE_ACTION = "eu.trentorise.smartcampus.account.AUTHENTICATE";
+	public static final String AUTHORITY_DEFAULT = "AUTHORITY_DEFAULT";
+	public static final String CALLBACK_INTENT = "eu.trentorise.smartcampus.account.CALLBACK_INTENT";
+	public static final int ACCOUNT_NOTIFICATION_ID = 1;
+	public static final CharSequence ACCOUNT_NOTIFICATION_TEXT = "Problem accessing SmartCampus account.";
+	public static final CharSequence ACCOUNT_NOTIFICATION_TITLE = "SmartCampus login required.";
 }

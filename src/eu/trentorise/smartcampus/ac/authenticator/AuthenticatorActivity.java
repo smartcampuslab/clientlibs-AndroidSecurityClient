@@ -1,52 +1,33 @@
 package eu.trentorise.smartcampus.ac.authenticator;
 
 import android.accounts.Account;
-import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
-import android.webkit.WebView;
+import eu.trentorise.smartcampus.ac.AuthActivity;
 import eu.trentorise.smartcampus.ac.AuthListener;
 import eu.trentorise.smartcampus.ac.Constants;
-import eu.trentorise.smartcampus.ac.R;
-import eu.trentorise.smartcampus.ac.SCAuthWebViewClient;
 
-public class AuthenticatorActivity  extends AccountAuthenticatorActivity {
+public class AuthenticatorActivity  extends AuthActivity {
 	public static final String PARAM_CONFIRM_CREDENTIALS = "confirmCredentials";
     public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";
 
-    private WebView mWebView;
 	private AccountManager mAccountManager;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-      super.onCreate(savedInstanceState);
-      requestWindowFeature(Window.FEATURE_PROGRESS);
       mAccountManager = AccountManager.get(this);
-      setUpWebView();
-    }
-    
-    private void setUpWebView() {
-    	setContentView(R.layout.web);
-        mWebView = (WebView) findViewById(R.id.webview);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.setVisibility(View.VISIBLE);
-        
-        mWebView.setWebViewClient(new SCAuthWebViewClient(new AMAuthListener()));
-
-        Intent intent = getIntent();
-        if (intent.getData() != null) {
-        	String url = intent.getDataString();
-        	if (intent.getStringExtra(Constants.KEY_AUTHORITY) != null) {
-        		url += (url.endsWith("/")?intent.getStringExtra(Constants.KEY_AUTHORITY):"/"+intent.getStringExtra(Constants.KEY_AUTHORITY));
-        	}
-        	mWebView.loadUrl(url);
-        }
+      super.onCreate(savedInstanceState);
     }
 
-    private class AMAuthListener implements AuthListener {
+    @Override
+	protected AuthListener getAuthListener() {
+		return new AMAuthListener();
+	}
+
+	private class AMAuthListener implements AuthListener {
 
 		@Override
 		public void onTokenAcquired(String token) {
@@ -62,9 +43,17 @@ public class AuthenticatorActivity  extends AccountAuthenticatorActivity {
 			 setAccountAuthenticatorResult(intent.getExtras());
 			 setResult(RESULT_OK, intent);
 			 
-			 Intent broadcast = new Intent(Constants.ACCOUNT_AUTHTOKEN_CHANGED_ACTION);
-			 broadcast.putExtra(Constants.KEY_AUTHORITY, request.getStringExtra(Constants.KEY_AUTHORITY));
-			 sendBroadcast(broadcast);
+			 IntentSender sender = request.getParcelableExtra(Constants.CALLBACK_INTENT);
+			 if (sender != null) {
+				 try {
+						Intent add = new Intent();
+						add.putExtra(AccountManager.KEY_AUTHTOKEN, token);
+						sender.sendIntent(AuthenticatorActivity.this, 0, add, null, null);
+					} catch (SendIntentException e) {
+						e.printStackTrace();
+					}
+			 }
+			 
 			 finish();  	    		  
 		}
 
