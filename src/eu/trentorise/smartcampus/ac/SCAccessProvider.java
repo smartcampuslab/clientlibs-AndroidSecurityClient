@@ -13,4 +13,6 @@ public interface SCAccessProvider {
 	String getAuthToken(Activity activity, String authority) throws OperationCanceledException, AuthenticatorException, IOException;
 	String getAuthToken(Context ctx, String authority, IntentSender intentSender) throws OperationCanceledException, AuthenticatorException, IOException;
 	String getAuthToken(Context ctx, String authority) throws OperationCanceledException, AuthenticatorException, IOException;
+
+	void invalidateToken(Context ctx, String authority);
 }

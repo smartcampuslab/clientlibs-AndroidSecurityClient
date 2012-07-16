@@ -121,4 +121,12 @@ public class AMSCAccessProvider implements SCAccessProvider {
 			}
 		}
 	}
+
+	@Override
+	public void invalidateToken(Context context, String inAuthority) {
+//		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
+		AccountManager am = AccountManager.get(context);
+		am.invalidateAuthToken(Constants.ACCOUNT_TYPE, null);
+	}
+
 }
