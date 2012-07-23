@@ -65,6 +65,7 @@ public class EmbeddedSCAccessProvider implements SCAccessProvider{
         CharSequence tickerText = Constants.ACCOUNT_NOTIFICATION_TITLE;
         long when = System.currentTimeMillis();
         Notification notification = new Notification(icon, tickerText, when);
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
         
         CharSequence contentText = Constants.ACCOUNT_NOTIFICATION_TEXT;
         PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, i, 0);
