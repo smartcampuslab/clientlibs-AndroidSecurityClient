@@ -12,7 +12,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
+import android.util.Log;
 import eu.trentorise.smartcampus.ac.Constants;
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
 
@@ -77,13 +79,22 @@ public class EmbeddedSCAccessProvider implements SCAccessProvider{
 	}
 
 	private String readStoredValue(Context context, String authority) {
-		return context.getSharedPreferences(Constants.ACCOUNT_TYPE,Context.MODE_PRIVATE).getString(authority, null);
+		try {
+			return Preferences.getAuthToken(context);
+		} catch (NameNotFoundException e) {
+			return null;
+		}//context.getSharedPreferences(Constants.ACCOUNT_TYPE,Context.MODE_PRIVATE).getString(authority, null);
 	}
 
 	@Override
 	public void invalidateToken(Context context, String inAuthority) {
-		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
-		context.getSharedPreferences(Constants.ACCOUNT_TYPE,Context.MODE_PRIVATE).edit().putString(authority, null).commit();		
+		try {
+			Preferences.clear(context);
+		} catch (NameNotFoundException e) {
+			Log.e(getClass().getName(), ""+e.getMessage());
+		}
+//		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
+//		context.getSharedPreferences(Constants.ACCOUNT_TYPE,Context.MODE_PRIVATE).edit().putString(authority, null).commit();		
 	}
 
 	
