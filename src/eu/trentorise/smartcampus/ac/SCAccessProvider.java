@@ -18,6 +18,8 @@ import android.content.IntentSender;
  */
 public interface SCAccessProvider {
 
+	public static final int SC_AUTH_ACTIVITY_REQUEST_CODE = 1000;
+	
 	/**
 	 * Retrieve the authentication token from the running activity. If the token is stored locally, it 
 	 * is returned, otherwise a dedicated Authentication activity starts for result. The calling activity

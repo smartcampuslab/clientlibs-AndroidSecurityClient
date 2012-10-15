@@ -48,7 +48,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 							Intent launch = (Intent) bundle.get(AccountManager.KEY_INTENT);
 							if (launch != null) {
 									launch.putExtra(Constants.KEY_AUTHORITY, authority);
-									activity.startActivityForResult(launch, 0);
+									activity.startActivityForResult(launch, SC_AUTH_ACTIVITY_REQUEST_CODE);
 							}
 						} catch (Exception e) {
 							return;
@@ -102,7 +102,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 					try {
 						Intent add = new Intent();
 						add.putExtra(AccountManager.KEY_AUTHTOKEN, token);
-						intentSender.sendIntent(context, 0, add, null, null);
+						intentSender.sendIntent(context, SC_AUTH_ACTIVITY_REQUEST_CODE, add, null, null);
 					} catch (SendIntentException e) {
 						return;
 					}

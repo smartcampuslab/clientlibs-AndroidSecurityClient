@@ -30,7 +30,7 @@ public class EmbeddedSCAccessProvider implements SCAccessProvider{
 		Intent i = new Intent(activity, EmbeddedAuthActivity.class);
         i.setData(Uri.parse(Constants.AUTH_REQUEST_URL));
         i.putExtra(Constants.KEY_AUTHORITY, authority);
-		activity.startActivityForResult(i, 0);
+		activity.startActivityForResult(i, SCAccessProvider.SC_AUTH_ACTIVITY_REQUEST_CODE);
 		return null;
 	}
 
@@ -70,7 +70,7 @@ public class EmbeddedSCAccessProvider implements SCAccessProvider{
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         
         CharSequence contentText = Constants.ACCOUNT_NOTIFICATION_TEXT;
-        PendingIntent contentIntent = PendingIntent.getActivity(ctx, 0, i, 0);
+        PendingIntent contentIntent = PendingIntent.getActivity(ctx, SC_AUTH_ACTIVITY_REQUEST_CODE, i, 0);
         notification.setLatestEventInfo(ctx, contentText, null, contentIntent);
         
         mNotificationManager.notify(Constants.ACCOUNT_NOTIFICATION_ID, notification);
