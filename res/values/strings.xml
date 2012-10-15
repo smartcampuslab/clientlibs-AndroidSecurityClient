@@ -2,4 +2,7 @@
 <resources>
     <string name="label">SmartCampus account</string>
     <string name="ui_auth_activity_title">SmartCampus account</string>
+    
+    <string name="token_required">Please login before proceeding with the SmartCampus application.</string>
+    <string name="auth_failed">Application initialization failed.</string>
 </resources>
