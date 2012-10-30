@@ -2,7 +2,7 @@ package eu.trentorise.smartcampus.ac;
 
 public class Constants {
 
-    public static final String AUTH_BASE_URL = "https://213.21.154.86/ac-service-provider-web/ac/";
+    public static final String AUTH_BASE_URL = "https://213.21.154.86/ac-service-provider-web-dev/ac/";
     public static final String AUTH_REQUEST_URL = AUTH_BASE_URL + "getToken";
     public static final String AUTH_OK_URL = AUTH_BASE_URL + "success";
     public static final String AUTH_CANCEL_URL = AUTH_BASE_URL + "cancel";
