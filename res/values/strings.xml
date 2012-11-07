@@ -5,4 +5,7 @@
     
     <string name="token_required">Please login before proceeding with the SmartCampus application.</string>
     <string name="auth_failed">Application initialization failed.</string>
+    
+    <string name="token_expired">SmartCampus login expired.</string>
+    
 </resources>
