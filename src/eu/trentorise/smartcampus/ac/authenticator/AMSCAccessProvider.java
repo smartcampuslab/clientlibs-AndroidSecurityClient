@@ -19,7 +19,13 @@ import eu.trentorise.smartcampus.ac.SCAccessProvider;
 
 public class AMSCAccessProvider implements SCAccessProvider {
 	
-	
+	@Override
+	public String readToken(Context ctx, String inAuthority) {
+		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
+		AccountManager am = AccountManager.get(ctx);
+		return am.peekAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE), authority);
+	}
+
 	@Override
 	public String getAuthToken(Context ctx, String inAuthority) throws OperationCanceledException, AuthenticatorException,
 			IOException {

@@ -68,4 +68,12 @@ public interface SCAccessProvider {
 	 * @param authority
 	 */
 	void invalidateToken(Context ctx, String authority);
+	
+	/**
+	 * Try to read the token stored, without requesting new token or signaling to the user
+	 * @param ctx
+	 * @param authority
+	 * @return
+	 */
+	String readToken(Context ctx, String authority); 
 }

@@ -97,5 +97,11 @@ public class EmbeddedSCAccessProvider implements SCAccessProvider{
 //		context.getSharedPreferences(Constants.ACCOUNT_TYPE,Context.MODE_PRIVATE).edit().putString(authority, null).commit();		
 	}
 
+	@Override
+	public String readToken(Context ctx, String inAuthority) {
+		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
+		return readStoredValue(ctx, authority);
+	}
+
 	
 }
