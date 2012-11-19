@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import eu.trentorise.smartcampus.ac.AuthActivity;
@@ -29,7 +30,12 @@ public class EmbeddedAuthActivity extends AuthActivity {
 	protected AuthListener getAuthListener() {
 		return new AMAuthListener();
 	}
-
+    
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+    	super.onConfigurationChanged(newConfig);
+    }
+    
 	private class AMAuthListener implements AuthListener {
 
 		@Override
