@@ -3,6 +3,7 @@ package eu.trentorise.smartcampus.ac;
 import android.accounts.AccountAuthenticatorActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -117,8 +118,8 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
 //			return false;
 //		}
 
-		private boolean verifyUrl(String url) {
-			if (url.startsWith(Constants.AUTH_OK_URL)){
+		private boolean verifyUrl(String url) throws NameNotFoundException {
+			if (url.startsWith(Constants.getOkUrl(AuthActivity.this))){
 				String fragment = Uri.parse(url).getFragment();
 				if (fragment != null) {
 					authListener.onTokenAcquired(fragment);
@@ -127,7 +128,7 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
 				}
 				return true;
 			} 
-			if (url.startsWith(Constants.AUTH_CANCEL_URL)) {
+			if (url.startsWith(Constants.getCancelUrl(AuthActivity.this))) {
 				authListener.onAuthCancelled();
 				return true;
 			}
@@ -142,7 +143,11 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
 		
 		@Override
 		public void onPageFinished(WebView view, String url) {
-			verifyUrl(url);
+			try {
+				verifyUrl(url);
+			} catch (NameNotFoundException e) {
+				authListener.onAuthFailed("No auth url specified.");
+			}
 			super.onPageFinished(view, url);
             mSpinner.dismiss();
             /* 

@@ -7,8 +7,10 @@ import android.accounts.AccountManager;
 import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import eu.trentorise.smartcampus.ac.Constants;
 
 public class Authenticator extends AbstractAccountAuthenticator {
@@ -28,7 +30,12 @@ public class Authenticator extends AbstractAccountAuthenticator {
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(Constants.KEY_AUTHORITY, authTokenType);
-        intent.setData(Uri.parse(Constants.AUTH_REQUEST_URL));
+        try {
+			intent.setData(Uri.parse(Constants.getRequestUrl(mContext)));
+		} catch (NameNotFoundException e) {
+			Log.e(getClass().getSimpleName(), "No auth url provided");
+			return null;
+		}
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;
@@ -53,7 +60,12 @@ public class Authenticator extends AbstractAccountAuthenticator {
         intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(Constants.KEY_AUTHORITY, authTokenType);
         intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-        intent.setData(Uri.parse(Constants. AUTH_REQUEST_URL));
+        try {
+			intent.setData(Uri.parse(Constants.getRequestUrl(mContext)));
+		} catch (NameNotFoundException e) {
+			Log.e(getClass().getSimpleName(), "No auth url provided");
+			return null;
+		}
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
         return bundle;

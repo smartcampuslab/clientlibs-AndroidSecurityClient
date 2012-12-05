@@ -28,7 +28,11 @@ public class EmbeddedSCAccessProvider implements SCAccessProvider{
 			return token;
 		}
 		Intent i = new Intent(activity, EmbeddedAuthActivity.class);
-        i.setData(Uri.parse(Constants.AUTH_REQUEST_URL));
+        try {
+			i.setData(Uri.parse(Constants.getRequestUrl(activity)));
+		} catch (NameNotFoundException e) {
+			throw new AuthenticatorException("No auth url provided");
+		}
         i.putExtra(Constants.KEY_AUTHORITY, authority);
 		activity.startActivityForResult(i, SCAccessProvider.SC_AUTH_ACTIVITY_REQUEST_CODE);
 		return null;
@@ -42,7 +46,11 @@ public class EmbeddedSCAccessProvider implements SCAccessProvider{
 			return token;
 		}
 		Intent i = new Intent(ctx, EmbeddedAuthActivity.class);
-        i.setData(Uri.parse(Constants.AUTH_REQUEST_URL));
+        try {
+			i.setData(Uri.parse(Constants.getRequestUrl(ctx)));
+		} catch (NameNotFoundException e) {
+			throw new AuthenticatorException("No auth url provided");
+		}
         i.putExtra(Constants.KEY_AUTHORITY, authority);
 		i.putExtra(Constants.CALLBACK_INTENT, intentSender);
 		ctx.startActivity(i);
@@ -57,7 +65,11 @@ public class EmbeddedSCAccessProvider implements SCAccessProvider{
 			return token;
 		}
 		Intent i = new Intent(ctx, EmbeddedAuthActivity.class);
-        i.setData(Uri.parse(Constants.AUTH_REQUEST_URL));
+        try {
+			i.setData(Uri.parse(Constants.getRequestUrl(ctx)));
+		} catch (NameNotFoundException e) {
+			throw new AuthenticatorException("No auth url provided");
+		}
         i.putExtra(Constants.KEY_AUTHORITY, authority);
 
         String ns = Context.NOTIFICATION_SERVICE;
