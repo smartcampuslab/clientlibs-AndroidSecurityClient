@@ -52,7 +52,7 @@ public class Constants {
 		return getAuthUrl(context) + "invalidateToken";
 	}
 
-	private static final String DEF_AUTH_BASE_URL = "https://ac.smartcampuslab.it/ac-service-provider-web-dev/ac/";	
+	private static final String DEF_AUTH_BASE_URL = "https://ac.smartcampuslab.it/ac-service-provider-web/ac/";	
 	private static String baseUrl = null;
 
 	public static String getAuthUrl(Context context) throws NameNotFoundException {
