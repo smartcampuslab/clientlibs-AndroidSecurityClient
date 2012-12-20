@@ -5,6 +5,11 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
+
+/**
+ * Service to handle Account authentication. It instantiates the authenticator
+ * and returns its IBinder.
+ */
 public class AuthenticationService extends Service {
 
     private static final String TAG = "AuthenticationService";

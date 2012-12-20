@@ -38,6 +38,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
 		}
         final Bundle bundle = new Bundle();
         bundle.putParcelable(AccountManager.KEY_INTENT, intent);
+
         return bundle;
     }
 
@@ -56,6 +57,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account,
             String authTokenType, Bundle loginOptions) throws NetworkErrorException 
     {
+
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(Constants.KEY_AUTHORITY, authTokenType);
