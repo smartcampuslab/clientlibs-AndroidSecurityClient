@@ -15,7 +15,7 @@ public class Constants {
 
     public static final String ACCOUNT_TYPE = "eu.trentorise.smartcampus.account";
     public static final String TOKEN_TYPE_DEFAULT = "eu.trentorise.smartcampus.account";
-	public static final String ACCOUNT_NAME = "eu.trentorise.smartcampus.account";
+	public static final String ACCOUNT_NAME = "SmartCampus";
 	public static final String KEY_AUTHORITY = "eu.trentorise.smartcampus.account.AUTHORITY";
 	
 	public static final int RESULT_FAILURE = 2;

@@ -57,7 +57,6 @@ public class Authenticator extends AbstractAccountAuthenticator {
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account,
             String authTokenType, Bundle loginOptions) throws NetworkErrorException 
     {
-
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
         intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(Constants.KEY_AUTHORITY, authTokenType);
@@ -75,7 +74,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public String getAuthTokenLabel(String authTokenType) {
-        return authTokenType;
+        return mContext.getString(eu.trentorise.smartcampus.ac.R.string.label);
     }
 
     @Override

@@ -11,7 +11,6 @@ import android.provider.ContactsContract;
 import eu.trentorise.smartcampus.ac.AuthActivity;
 import eu.trentorise.smartcampus.ac.AuthListener;
 import eu.trentorise.smartcampus.ac.Constants;
-import eu.trentorise.smartcampus.ac.R;
 
 public class AuthenticatorActivity  extends AuthActivity {
 	public static final String PARAM_CONFIRM_CREDENTIALS = "confirmCredentials";
@@ -34,10 +33,10 @@ public class AuthenticatorActivity  extends AuthActivity {
 
 		@Override
 		public void onTokenAcquired(String token) {
-			 final Account account = new Account(getString(R.string.label), Constants.ACCOUNT_TYPE);
+			 final Account account = new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE);
 			 mAccountManager.addAccountExplicitly(account, null, null);
 			 
-	          ContentResolver.setSyncAutomatically(account,ContactsContract.AUTHORITY, true);
+	         ContentResolver.setSyncAutomatically(account,ContactsContract.AUTHORITY, true);
 	          
 		     Intent request = getIntent();
 			 if (request.getStringExtra(Constants.KEY_AUTHORITY)!=null)
