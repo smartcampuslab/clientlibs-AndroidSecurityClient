@@ -13,7 +13,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import eu.trentorise.smartcampus.ac.Constants;
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
 
@@ -43,30 +46,32 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	public String getAuthToken(final Activity activity, String inAuthority) throws OperationCanceledException, AuthenticatorException, IOException {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		AccountManager am = AccountManager.get(activity);
-		AccountManagerFuture<Bundle> future = am.getAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE), authority, false, 
-				new AccountManagerCallback<Bundle>() {
-
-					@Override
-					public void run(AccountManagerFuture<Bundle> result) {
-						Bundle bundle = null;
-						try {
-							bundle = result.getResult();
-							Intent launch = (Intent) bundle.get(AccountManager.KEY_INTENT);
-							if (launch != null) {
-									launch.putExtra(Constants.KEY_AUTHORITY, authority);
-									activity.startActivityForResult(launch, SC_AUTH_ACTIVITY_REQUEST_CODE);
+		String token = am.peekAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE), authority);
+		if (token == null)
+		{
+			am.getAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE), authority, false, 
+					new AccountManagerCallback<Bundle>() {
+	
+						@Override
+						public void run(AccountManagerFuture<Bundle> result) {
+							Bundle bundle = null;
+							try {
+								bundle = result.getResult();
+								Intent launch = (Intent) bundle.get(AccountManager.KEY_INTENT);
+								if (launch != null) {
+										launch.putExtra(Constants.KEY_AUTHORITY, authority);
+										activity.startActivityForResult(launch, SC_AUTH_ACTIVITY_REQUEST_CODE);
+								}
+							} catch (Exception e) {
+								return;
 							}
-						} catch (Exception e) {
-							return;
 						}
 					}
-				}
-		, null);
-		String token = null;
-		if (future.isDone()) {
-			token = future.getResult().getString(AccountManager.KEY_AUTHTOKEN);
+			, null);
+			return null;
 		}
-		return token;
+		return token;		
+
 	}
 
 	@Override
