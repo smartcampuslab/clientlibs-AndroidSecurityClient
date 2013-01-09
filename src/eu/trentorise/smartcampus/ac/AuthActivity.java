@@ -36,6 +36,15 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+/**
+ * Abstract android activity to handle the authentication interactions. 
+ * Defines an embedded Web browser (WebView) where the authentication interactions
+ * take place. Upon result obtained the token is retrieved from the WebView context.
+ * The result is passed to the {@link AuthListener} instance that the concrete subclasses
+ * should define.
+ * @author raman
+ *
+ */
 public abstract class AuthActivity extends AccountAuthenticatorActivity {
 
     static final FrameLayout.LayoutParams FILL =

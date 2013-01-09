@@ -27,6 +27,12 @@ import eu.trentorise.smartcampus.ac.AuthActivity;
 import eu.trentorise.smartcampus.ac.AuthListener;
 import eu.trentorise.smartcampus.ac.Constants;
 
+/**
+ *  Implementation of the {@link AuthActivity} storing the acquired token
+ * in the {@link AccountManager} infrastructure and broadcasting the result event.
+ * @author raman
+ *
+ */
 public class AuthenticatorActivity  extends AuthActivity {
 	public static final String PARAM_CONFIRM_CREDENTIALS = "confirmCredentials";
     public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";

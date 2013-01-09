@@ -32,7 +32,12 @@ import android.net.Uri;
 import android.util.Log;
 import eu.trentorise.smartcampus.ac.Constants;
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
-
+/**
+ * Implementation of the {@link SCAccessProvider} interface relying on the token
+ * stored in shared preferences and using the {@link EmbeddedAuthActivity} activity.
+ * @author raman
+ *
+ */
 public class EmbeddedSCAccessProvider implements SCAccessProvider{
 
 	@Override

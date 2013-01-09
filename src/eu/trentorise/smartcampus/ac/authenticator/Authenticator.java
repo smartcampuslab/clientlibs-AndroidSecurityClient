@@ -28,6 +28,11 @@ import android.os.Bundle;
 import android.util.Log;
 import eu.trentorise.smartcampus.ac.Constants;
 
+/**
+ * {@link AbstractAccountAuthenticator} implementation for SmartCampus authentication mechanism. 
+ * @author raman
+ *
+ */
 public class Authenticator extends AbstractAccountAuthenticator {
 
     // Authentication Service context

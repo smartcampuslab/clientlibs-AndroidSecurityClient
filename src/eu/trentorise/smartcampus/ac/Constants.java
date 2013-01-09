@@ -20,23 +20,46 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.PackageManager.NameNotFoundException;
 
+/**
+ * Constants and their read methods for security APIs
+ * @author raman
+ *
+ */
 public class Constants {
 
-//    public static final String AUTH_BASE_URL = "https://ac.smartcampuslab.it/ac-service-provider-web/ac/";
-//    public static final String AUTH_REQUEST_URL = AUTH_BASE_URL + "getToken";
-//    public static final String AUTH_OK_URL = AUTH_BASE_URL + "success";
-//    public static final String AUTH_CANCEL_URL = AUTH_BASE_URL + "cancel";
-//    public static final String AUTH_INVALIDATE_URL = AUTH_BASE_URL + "invalidateToken";
-
+	/**
+	 * Android account type used by the SmartCampus apps
+	 */
     public static final String ACCOUNT_TYPE = "eu.trentorise.smartcampus.account";
+    /**
+     * Default token type
+     */
     public static final String TOKEN_TYPE_DEFAULT = "eu.trentorise.smartcampus.account";
-	public static final String ACCOUNT_NAME = "SmartCampus";
+	/**
+	 * Account type name as presented in Accounts and Synnc interface
+	 */
+    public static final String ACCOUNT_NAME = "SmartCampus";
+    /**
+     * App authority key
+     */
 	public static final String KEY_AUTHORITY = "eu.trentorise.smartcampus.account.AUTHORITY";
 	
+	/**
+	 * Failure result code
+	 */
 	public static final int RESULT_FAILURE = 2;
 
+	/**
+	 * Android action key for the token change broadcast
+	 */
 	public static final String ACCOUNT_AUTHTOKEN_CHANGED_ACTION = "eu.trentorise.smartcampus.account.AUTHTOKEN_CHANGED";
+	/**
+	 * Android action key for the authentication 
+	 */
 	public static final String ACCOUNT_AUTHENTICATE_ACTION = "eu.trentorise.smartcampus.account.AUTHENTICATE";
+	/**
+	 * App authority default value
+	 */
 	public static final String AUTHORITY_DEFAULT = "AUTHORITY_DEFAULT";
 	public static final String CALLBACK_INTENT = "eu.trentorise.smartcampus.account.CALLBACK_INTENT";
 	public static final int ACCOUNT_NOTIFICATION_ID = 1;
@@ -54,22 +77,53 @@ public class Constants {
 	
 	private static final String P_AUTH_BASE_URL= "AUTH_BASE_URL";
 	
+	private static final String DEF_AUTH_BASE_URL = "https://ac.smartcampuslab.it/ac-service-provider-web/ac/";	
+	private static String baseUrl = null;
+
+
+	/**
+	 * Retrieve the SmartCampus authentication token request URL
+	 * @param context
+	 * @return
+	 * @throws NameNotFoundException
+	 */
 	public static String getRequestUrl(Context context) throws NameNotFoundException {
 		return getAuthUrl(context) + "getToken";
 	}
+	/**
+	 * Retrieve the SmartCampus authentication success URL
+	 * @param context
+	 * @return
+	 * @throws NameNotFoundException
+	 */
 	public static String getOkUrl(Context context) throws NameNotFoundException {
 		return getAuthUrl(context) + "success";
 	}
+	/**
+	 * Retrieve the SmartCampus authentication cancel URL
+	 * @param context
+	 * @return
+	 * @throws NameNotFoundException
+	 */
 	public static String getCancelUrl(Context context) throws NameNotFoundException {
 		return getAuthUrl(context) + "cancel";
 	}
+	/**
+	 * Retrieve the SmartCampus token invalidation URL
+	 * @param context
+	 * @return
+	 * @throws NameNotFoundException
+	 */
 	public static String getInvalidateUrl(Context context) throws NameNotFoundException {
 		return getAuthUrl(context) + "invalidateToken";
 	}
 
-	private static final String DEF_AUTH_BASE_URL = "https://ac.smartcampuslab.it/ac-service-provider-web/ac/";	
-	private static String baseUrl = null;
-
+	/**
+	 * Read the authentication base URL from the shared preferences file
+	 * @param context
+	 * @return
+	 * @throws NameNotFoundException
+	 */
 	public static String getAuthUrl(Context context) throws NameNotFoundException {
 		if (baseUrl == null) {
 			SharedPreferences prefs = Constants.getPrefs(context);
@@ -84,7 +138,12 @@ public class Constants {
 		
 		return baseUrl;
 	}
-	
+	/**
+	 * Write the authentication base URL to the shared preferences file.
+	 * @param context
+	 * @param url
+	 * @throws NameNotFoundException
+	 */
 	public static void setAuthUrl(Context context, String url) throws NameNotFoundException {
 		assert url != null;
 		SharedPreferences prefs = Constants.getPrefs(context);
@@ -94,7 +153,12 @@ public class Constants {
 		edit.commit();
 		baseUrl = null;
 	}
-	
+	/**
+	 * Read the shared preferences file where common properties are stored
+	 * @param context
+	 * @return
+	 * @throws NameNotFoundException
+	 */
 	public static SharedPreferences getPrefs(Context context) throws NameNotFoundException {
 		Context sharedContext = context.createPackageContext(SHARED_PACKAGE, ACCESS);
 		return sharedContext.getSharedPreferences(COMMON_PREF, ACCESS);

@@ -28,13 +28,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import eu.trentorise.smartcampus.ac.Constants;
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
 
+/**
+ *  Implementation of the {@link SCAccessProvider} interface relying on the token
+ * stored {@link AccountManager} and using the {@link AuthenticatorActivity} activity.
+
+ * @author raman
+ *
+ */
 public class AMSCAccessProvider implements SCAccessProvider {
 	
 	@Override

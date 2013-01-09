@@ -15,12 +15,26 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.ac;
 
+/**
+ * Callback interface for the authentication result handling
+ * @author raman
+ *
+ */
 public interface AuthListener {
 
+	/**
+	 * Handler for successful authentication
+	 * @param token
+	 */
 	void onTokenAcquired(String token);
-	
+	/**
+	 * Handler for the authentication error
+	 * @param error
+	 */
 	void onAuthFailed(String error);
-	
+	/**
+	 * Handler for the authentication cancellation
+	 */
 	void onAuthCancelled();
 }
 
