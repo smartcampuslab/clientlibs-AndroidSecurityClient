@@ -44,7 +44,7 @@ public class Constants {
 	/**
 	 * Account type name as presented in Accounts and Sync interface
 	 */
-    public static final String ACCOUNT_NAME = "SmartCampus";
+    public static final String ACCOUNT_NAME_DEFAULT = "SmartCampus";
     /**
      * App authority key
      */
@@ -77,6 +77,7 @@ public class Constants {
 
 	public static final String APP_METADATA_SHARED_PACKAGE = "SHARED_PACKAGE";
 	public static final String APP_METADATA_ACCOUNT_TYPE = "ACCOUNT_TYPE";
+	public static final String APP_METADATA_ACCOUNT_NAME = "ACCOUNT_NAME";
 	
 	// Shared package path
 	private static final String SHARED_PACKAGE = "eu.trentorise.smartcampus.launcher";
@@ -160,7 +161,17 @@ public class Constants {
 	public static String getAccountType(Context context) {
 		return getAccountTypeFromMetadata(context);
 	}
-	
+
+	/**
+	 * Return account name used by the application
+	 * @param context
+	 * @return
+	 * @throws NameNotFoundException
+	 */
+	public static String getAccountName(Context context) {
+		return getAccountNameFromMetadata(context);
+	}
+
 	/**
 	 * Write the authentication base URL to the shared preferences file.
 	 * @param context
@@ -203,6 +214,17 @@ public class Constants {
 				return info.metaData.getString(APP_METADATA_ACCOUNT_TYPE);
 		} catch (NameNotFoundException e) {
 		}
-		return SHARED_PACKAGE;
+		return ACCOUNT_TYPE_DEFAULT;
 	}
+	
+	private static String getAccountNameFromMetadata(Context ctx) {
+		try {
+			ApplicationInfo info = ctx.getPackageManager().getApplicationInfo(ctx.getPackageName(), PackageManager.GET_META_DATA);
+			if (info != null && info.metaData != null && info.metaData.containsKey(APP_METADATA_ACCOUNT_NAME)) 
+				return info.metaData.getString(APP_METADATA_ACCOUNT_NAME);
+		} catch (NameNotFoundException e) {
+		}
+		return ACCOUNT_NAME_DEFAULT;
+	}
+
 }

@@ -109,7 +109,7 @@ public class AuthenticatorActivity  extends AuthActivity {
 
 		@Override
 		public void onTokenAcquired(String token) {
-			 final Account account = new Account(Constants.ACCOUNT_NAME, Constants.getAccountType(AuthenticatorActivity.this));
+			 final Account account = new Account(Constants.getAccountName(AuthenticatorActivity.this), Constants.getAccountType(AuthenticatorActivity.this));
 			 mAccountManager.addAccountExplicitly(account, null, null);
 			 
 	         ContentResolver.setSyncAutomatically(account,ContactsContract.AUTHORITY, true);
@@ -120,7 +120,7 @@ public class AuthenticatorActivity  extends AuthActivity {
 			 else mAccountManager.setAuthToken(account, Constants.AUTHORITY_DEFAULT, token);
 
 			 final Intent intent = new Intent();
-			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.ACCOUNT_NAME);
+			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.getAccountName(AuthenticatorActivity.this));
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Constants.getAccountType(AuthenticatorActivity.this));
 			 intent.putExtra(AccountManager.KEY_AUTHTOKEN, token);
 			 setAccountAuthenticatorResult(intent.getExtras());
@@ -143,7 +143,7 @@ public class AuthenticatorActivity  extends AuthActivity {
 		@Override
 		public void onAuthFailed(String error) {
 			 final Intent intent = new Intent();
-			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.ACCOUNT_NAME);
+			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.getAccountName(AuthenticatorActivity.this));
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Constants.getAccountType(AuthenticatorActivity.this));
 			 intent.putExtra(AccountManager.KEY_AUTH_FAILED_MESSAGE, error);
 			 setAccountAuthenticatorResult(intent.getExtras());
@@ -154,7 +154,7 @@ public class AuthenticatorActivity  extends AuthActivity {
 		@Override
 		public void onAuthCancelled() {
 			 final Intent intent = new Intent();
-			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.ACCOUNT_NAME);
+			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.getAccountName(AuthenticatorActivity.this));
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Constants.getAccountType(AuthenticatorActivity.this));
 			 setAccountAuthenticatorResult(intent.getExtras());
 			 setResult(RESULT_CANCELED, intent);

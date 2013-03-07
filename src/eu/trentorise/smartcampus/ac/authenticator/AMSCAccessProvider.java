@@ -45,7 +45,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	public String readToken(Context ctx, String inAuthority) {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		AccountManager am = AccountManager.get(ctx);
-		return am.peekAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.getAccountType(ctx)), authority);
+		return am.peekAuthToken(new Account(Constants.getAccountName(ctx), Constants.getAccountType(ctx)), authority);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 			IOException {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		AccountManager am = AccountManager.get(ctx);
-		AccountManagerFuture<Bundle> future = am.getAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.getAccountType(ctx)), authority, true, null, null); 
+		AccountManagerFuture<Bundle> future = am.getAuthToken(new Account(Constants.getAccountName(ctx), Constants.getAccountType(ctx)), authority, true, null, null); 
 		String token = null;
 		if (future.isDone()) {
 			token = future.getResult().getString(AccountManager.KEY_AUTHTOKEN);
@@ -65,10 +65,10 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	public String getAuthToken(final Activity activity, String inAuthority) throws OperationCanceledException, AuthenticatorException, IOException {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		final AccountManager am = AccountManager.get(activity);
-		String token = am.peekAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.getAccountType(activity)), authority);
+		String token = am.peekAuthToken(new Account(Constants.getAccountName(activity), Constants.getAccountType(activity)), authority);
 		if (token == null)
 		{
-			final Account a = new Account(Constants.ACCOUNT_NAME, Constants.getAccountType(activity));
+			final Account a = new Account(Constants.getAccountName(activity), Constants.getAccountType(activity));
 			am.getAuthToken(a, authority, false, 
 					new AccountManagerCallback<Bundle>() {
 	
@@ -101,7 +101,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	public String getAuthToken(Context ctx, String inAuthority, IntentSender intentSender) throws OperationCanceledException, AuthenticatorException, IOException {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		AccountManager am = AccountManager.get(ctx);
-		AccountManagerFuture<Bundle> future = am.getAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.getAccountType(ctx)), authority, false, new OnTokenAcquired(ctx, authority, intentSender), null);
+		AccountManagerFuture<Bundle> future = am.getAuthToken(new Account(Constants.getAccountName(ctx), Constants.getAccountType(ctx)), authority, false, new OnTokenAcquired(ctx, authority, intentSender), null);
 		String token = null;
 		if (future.isDone()) {
 			token = future.getResult().getString(AccountManager.KEY_AUTHTOKEN);
@@ -171,14 +171,14 @@ public class AMSCAccessProvider implements SCAccessProvider {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		final AccountManager am = AccountManager.get(activity);
 		Bundle options = new Bundle();
-		String oldToken = am.peekAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.getAccountType(activity)), authority);
+		String oldToken = am.peekAuthToken(new Account(Constants.getAccountName(activity), Constants.getAccountType(activity)), authority);
 		if (oldToken != null) {
 			options.putString(Constants.PROMOTION_TOKEN, oldToken);
 		}
 		
-		final Account a = new Account(Constants.ACCOUNT_NAME, Constants.getAccountType(activity));
+		final Account a = new Account(Constants.getAccountName(activity), Constants.getAccountType(activity));
 		am.getAuthToken(
-				new Account(Constants.ACCOUNT_NAME, Constants.getAccountType(activity)), 
+				new Account(Constants.getAccountName(activity), Constants.getAccountType(activity)), 
 				authority, 
 				options, 
 				activity,
