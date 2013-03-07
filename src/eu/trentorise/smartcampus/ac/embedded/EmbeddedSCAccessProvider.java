@@ -135,5 +135,11 @@ public class EmbeddedSCAccessProvider implements SCAccessProvider{
 		return readStoredValue(ctx, authority);
 	}
 
+	@Override
+	public String promote(Activity activity, String authority, String authToken) {
+		throw new UnsupportedOperationException();
+	}
+
+	
 	
 }

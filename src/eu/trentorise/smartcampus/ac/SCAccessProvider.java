@@ -91,4 +91,13 @@ public interface SCAccessProvider {
 	 * @return
 	 */
 	String readToken(Context ctx, String authority); 
+	
+	/**
+	 * Promote the current anonymous account to the new one defined by the authority parameter.
+	 * @param ctx
+	 * @param authority
+	 * @param authToken
+	 * @return
+	 */
+	String promote(Activity activity, String authority, String authToken);
 }

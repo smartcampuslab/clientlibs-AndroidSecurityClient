@@ -35,6 +35,8 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import eu.trentorise.smartcampus.ac.model.UserData;
+import eu.trentorise.smartcampus.ac.network.RemoteConnector;
 
 /**
  * Abstract android activity to handle the authentication interactions. 
@@ -146,7 +148,11 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
 			if (url.startsWith(Constants.getOkUrl(AuthActivity.this))){
 				String fragment = Uri.parse(url).getFragment();
 				if (fragment != null) {
-					authListener.onTokenAcquired(fragment);
+					UserData user = RemoteConnector.validateAccessCode(Constants.getAuthUrl(AuthActivity.this), fragment);
+					if (user == null || user.getToken() == null) {
+						authListener.onAuthFailed("Token validation failed");
+					}
+					authListener.onTokenAcquired(user.getToken());
 				} else {
 					authListener.onAuthFailed("No token provided");
 				}

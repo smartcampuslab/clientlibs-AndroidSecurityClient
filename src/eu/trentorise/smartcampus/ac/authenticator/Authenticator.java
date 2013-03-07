@@ -27,6 +27,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import eu.trentorise.smartcampus.ac.Constants;
+import eu.trentorise.smartcampus.ac.DeviceUuidFactory;
+import eu.trentorise.smartcampus.ac.model.UserData;
+import eu.trentorise.smartcampus.ac.network.RemoteConnector;
 
 /**
  * {@link AbstractAccountAuthenticator} implementation for SmartCampus authentication mechanism. 
@@ -45,21 +48,14 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public Bundle addAccount(AccountAuthenticatorResponse response, String accountType,
-            String authTokenType, String[] requiredFeatures, Bundle options) {
-        final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
-        intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
-        intent.putExtra(Constants.KEY_AUTHORITY, authTokenType);
-        try {
-			intent.setData(Uri.parse(Constants.getRequestUrl(mContext)));
-		} catch (NameNotFoundException e) {
-			Log.e(getClass().getSimpleName(), "No auth url provided");
+            String authTokenType, String[] requiredFeatures, Bundle options) 
+    {
+    	try {
+			return getAuthToken(response, null, authTokenType, options);
+		} catch (NetworkErrorException e) {
+			Log.e(Authenticator.class.getName(), ""+e.getMessage());
 			return null;
 		}
-        final Bundle bundle = new Bundle();
-        bundle.putParcelable(AccountManager.KEY_INTENT, intent);
-
-        return bundle;
     }
 
     @Override
@@ -78,9 +74,9 @@ public class Authenticator extends AbstractAccountAuthenticator {
             String authTokenType, Bundle loginOptions) throws NetworkErrorException 
     {
         final Intent intent = new Intent(mContext, AuthenticatorActivity.class);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         intent.putExtra(AuthenticatorActivity.PARAM_AUTHTOKEN_TYPE, authTokenType);
         intent.putExtra(Constants.KEY_AUTHORITY, authTokenType);
-        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
         try {
 			intent.setData(Uri.parse(Constants.getRequestUrl(mContext)));
 		} catch (NameNotFoundException e) {
@@ -94,7 +90,7 @@ public class Authenticator extends AbstractAccountAuthenticator {
 
     @Override
     public String getAuthTokenLabel(String authTokenType) {
-        return mContext.getString(eu.trentorise.smartcampus.ac.R.string.label);
+    	return null;
     }
 
     @Override
