@@ -24,6 +24,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -148,11 +149,7 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
 			if (url.startsWith(Constants.getOkUrl(AuthActivity.this))){
 				String fragment = Uri.parse(url).getFragment();
 				if (fragment != null) {
-					UserData user = RemoteConnector.validateAccessCode(Constants.getAuthUrl(AuthActivity.this), fragment);
-					if (user == null || user.getToken() == null) {
-						authListener.onAuthFailed("Token validation failed");
-					}
-					authListener.onTokenAcquired(user.getToken());
+					new ValidateAsyncTask().execute(fragment);
 				} else {
 					authListener.onAuthFailed("No token provided");
 				}
@@ -196,4 +193,26 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
 		}
 	}
 
+	private class ValidateAsyncTask extends AsyncTask<String, Void, UserData> {
+
+		@Override
+		protected UserData doInBackground(String... params) {
+			try {
+				return RemoteConnector.validateAccessCode(Constants.getAuthUrl(AuthActivity.this), params[0]);
+			} catch (NameNotFoundException e) {
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(UserData user) {
+			if (user == null || user.getToken() == null) {
+				authListener.onAuthFailed("Token validation failed");
+			} else {
+				authListener.onTokenAcquired(user.getToken());
+			}
+		}
+		
+		
+	}
 }
