@@ -32,7 +32,7 @@ public class UserData {
 	private String userId;
 	private long socialId;
 	
-	private List<Attribute> identityAttributes;
+	private List<Attribute> attributes;
 
 	private String token;
 	private long expires;
@@ -63,14 +63,14 @@ public class UserData {
 	/**
 	 * @return the identityAttributes
 	 */
-	public List<Attribute> getIdentityAttributes() {
-		return identityAttributes;
+	public List<Attribute> getAttributes() {
+		return attributes;
 	}
 	/**
 	 * @param identityAttributes the identityAttributes to set
 	 */
-	public void setIdentityAttributes(List<Attribute> identityAttributes) {
-		this.identityAttributes = identityAttributes;
+	public void setAttributes(List<Attribute> identityAttributes) {
+		this.attributes = identityAttributes;
 	}
 	/**
 	 * @return the token
@@ -96,11 +96,12 @@ public class UserData {
 	public void setExpires(long expires) {
 		this.expires = expires;
 	}
+
 	/**
 	 * @param json
 	 * @return
 	 */
-	public static UserData valueOf(JSONObject json) {
+	public static UserData valueOfAccountData(JSONObject json) {
 		if (json == null) return null;
 		UserData data = new UserData();
 		try {
@@ -110,10 +111,10 @@ public class UserData {
 			data.setUserId(json.getString("userId"));
 			if (json.has("identityAttributes")) {
 				JSONArray array = json.getJSONArray("identityAttributes");
-				data.setIdentityAttributes(new ArrayList<Attribute>(array.length()));
+				data.setAttributes(new ArrayList<Attribute>(array.length()));
 				for (int i = 0 ; i < array.length(); i++) {
 					Attribute a = Attribute.valueOf(array.getJSONObject(i));
-					if (a != null) data.getIdentityAttributes().add(a);
+					if (a != null) data.getAttributes().add(a);
 				}
 			}
 			return data;
@@ -121,4 +122,31 @@ public class UserData {
 			return null;
 		}
 	}
+	
+	/**
+	 * @param json
+	 * @return
+	 */
+	public static UserData valueOf(JSONObject json) {
+		if (json == null) return null;
+		UserData data = new UserData();
+		try {
+			data.setExpires(json.getLong("expTime"));
+			data.setSocialId(json.getLong("socialId"));
+			data.setToken(json.getString("authToken"));
+			data.setUserId(json.getString("id"));
+			if (json.has("attributes")) {
+				JSONArray array = json.getJSONArray("attributes");
+				data.setAttributes(new ArrayList<Attribute>(array.length()));
+				for (int i = 0 ; i < array.length(); i++) {
+					Attribute a = Attribute.valueOf(array.getJSONObject(i));
+					if (a != null) data.getAttributes().add(a);
+				}
+			}
+			return data;
+		} catch (JSONException e) {
+			return null;
+		}
+	}
+
 }

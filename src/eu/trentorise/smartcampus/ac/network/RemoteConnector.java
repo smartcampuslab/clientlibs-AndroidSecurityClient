@@ -16,6 +16,9 @@
 
 package eu.trentorise.smartcampus.ac.network;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -30,9 +33,13 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
+import eu.trentorise.smartcampus.ac.AcServiceException;
+import eu.trentorise.smartcampus.ac.model.Attribute;
 import eu.trentorise.smartcampus.ac.model.UserData;
 
 /**
@@ -63,7 +70,7 @@ public class RemoteConnector {
             final String response = EntityUtils.toString(resp.getEntity());
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             	JSONObject json = new JSONObject(response);
-            	UserData data = UserData.valueOf(json);
+            	UserData data = UserData.valueOfAccountData(json);
                 Log.v(TAG, "Successful authentication");
                 return data;
             }
@@ -120,5 +127,79 @@ public class RemoteConnector {
         ConnManagerParams.setTimeout(params, HTTP_REQUEST_TIMEOUT_MS);
         return httpClient;
     }
+
+    public static UserData getUser(String host, String token) throws SecurityException, AcServiceException {
+    	String json = getJSON(host, "/users/me", token);
+    	try {
+			return UserData.valueOf(new JSONObject(json));
+		} catch (JSONException e) {
+			throw new AcServiceException(e);
+		} 
+    }
+
+    public static List<Attribute> getUserAttributes(String host, String authority, String key, String token) throws SecurityException, AcServiceException {
+    	String json = null;
+    	if (key != null && authority != null) {
+    		json = getJSON(host, "/users/me/attributes/authorities/"+authority+"/keys/"+key, token);
+    	} else if (authority != null) {
+    		json = getJSON(host, "/users/me/attributes/authorities/"+authority, token);
+    	} else {
+    		json = getJSON(host, "/users/me/attributes", token);
+    	}
+    	
+    	try {
+    		JSONObject obj = new JSONObject(json);
+    		JSONArray arr = obj.getJSONArray("Attribute");
+    		List<Attribute> result = new ArrayList<Attribute>();
+    		if (arr != null) {
+    			for (int i = 0; i < arr.length(); i++) {
+    				result.add(Attribute.valueOf(arr.getJSONObject(i)));
+    			}
+    		}
+    		return result;
+		} catch (JSONException e) {
+			throw new AcServiceException(e);
+		} 
+    }
+
+    public static boolean isValidUser(String host, String token) throws SecurityException, AcServiceException {
+    	String json = getJSON(host, "/users/me/validity", token);
+		return Boolean.valueOf(json);
+    }
+    public static boolean isAnonymousUser(String host, String token) throws SecurityException, AcServiceException {
+    	String json = getJSON(host, "/users/me/anonymous", token);
+		return Boolean.valueOf(json);
+    }
+	public static boolean canReadResource(String host, String token, String resourceId) throws SecurityException, AcServiceException {
+    	String json = getJSON(host, "/resources/"+resourceId+"/access", token);
+		return Boolean.valueOf(json);
+	}
+
+	private static String getJSON(String host, String service, String token) throws SecurityException, AcServiceException {
+        final HttpResponse resp;
+        final HttpEntity entity = null;
+        Log.i(TAG, "reading data: " + service);
+        final HttpPost post = new HttpPost(host + service);
+        post.setEntity(entity);
+        post.setHeader("Accept", "application/json");
+        post.setHeader("AUTH_TOKEN",token);
+        try {
+            resp = getHttpClient().execute(post);
+            String response = EntityUtils.toString(resp.getEntity());
+            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                return response;
+            }
+            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_FORBIDDEN) {
+                throw new SecurityException();
+            }
+            throw new AcServiceException("Error validating " + resp.getStatusLine());
+        } catch (final Exception e) {
+            Log.e(TAG, "IOException when getting authtoken", e);
+            throw new AcServiceException(e.getMessage(),e);
+        } finally {
+            Log.v(TAG, "getAuthtoken completing");
+        }
+
+	}
 
 }
