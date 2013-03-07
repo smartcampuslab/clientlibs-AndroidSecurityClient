@@ -17,8 +17,8 @@
 <resources>
     <string name="ui_auth_activity_title">SmartCampus</string>
     
-    <string name="token_required">E' necessario effettuare il login prima di utilizzare l'applicazione.</string>
-    <string name="auth_failed">Inizializzazione dell'app fallita.</string>
+    <string name="token_required">E\' necessario effettuare il login prima di utilizzare l\'applicazione.</string>
+    <string name="auth_failed">Inizializzazione dell\'app fallita.</string>
     
     <string name="token_expired">SmartCampus login scaduto.</string>
     <string name="auth_in_progress">Autenticazione in corso...</string>
