@@ -168,16 +168,16 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	}
 
 	@Override
-	public String promote(final Activity activity, String inAuthority, String authToken) {
+	public String promote(final Activity activity, String inAuthority, String token) {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		final AccountManager am = AccountManager.get(activity);
 		Bundle options = new Bundle();
-		String oldToken = am.peekAuthToken(new Account(Constants.getAccountName(activity), Constants.getAccountType(activity)), authority);
-		if (oldToken != null) {
-			options.putString(Constants.PROMOTION_TOKEN, oldToken);
+		if (token != null) {
+			options.putString(Constants.PROMOTION_TOKEN, token);
 		}
-		
 		final Account a = new Account(Constants.getAccountName(activity), Constants.getAccountType(activity));
+		am.invalidateAuthToken(Constants.getAccountType(activity), token);
+		
 		am.getAuthToken(
 				new Account(Constants.getAccountName(activity), Constants.getAccountType(activity)), 
 				authority, 
