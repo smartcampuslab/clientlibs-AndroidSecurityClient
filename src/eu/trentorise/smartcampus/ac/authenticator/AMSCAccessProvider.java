@@ -17,6 +17,9 @@ package eu.trentorise.smartcampus.ac.authenticator;
 
 import java.io.IOException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
@@ -31,6 +34,7 @@ import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import eu.trentorise.smartcampus.ac.Constants;
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
+import eu.trentorise.smartcampus.ac.model.UserData;
 
 /**
  *  Implementation of the {@link SCAccessProvider} interface relying on the token
@@ -163,9 +167,6 @@ public class AMSCAccessProvider implements SCAccessProvider {
 		am.invalidateAuthToken(Constants.getAccountType(context), readToken(context, inAuthority));
 	}
 
-	/* (non-Javadoc)
-	 * @see eu.trentorise.smartcampus.ac.SCAccessProvider#promote(android.app.Activity, java.lang.String, java.lang.String)
-	 */
 	@Override
 	public String promote(final Activity activity, String inAuthority, String authToken) {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
@@ -206,5 +207,28 @@ public class AMSCAccessProvider implements SCAccessProvider {
 		return null;
 	}
 
+	@Override
+	public UserData readUserData(Context ctx, String inAuthority) {
+		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
+		AccountManager am = AccountManager.get(ctx);
+		Account account = new Account(Constants.getAccountName(ctx), Constants.getAccountType(ctx));
+		String token = am.peekAuthToken(account, authority);
+		if (token == null) return null;
+		String userDataString = am.getUserData(account, AccountManager.KEY_USERDATA);
+		try {
+			return UserData.valueOf(new JSONObject(userDataString));
+		} catch (JSONException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public Boolean isUserAnonymous(Context ctx, String authority) {
+		UserData data = readUserData(ctx, authority);
+		if (data == null)  return null;
+		return data.getAttributes()== null || (data.getAttributes().size() == 1 && data.getAttributes().get(0).getAuthority().getName().equals(Constants.TOKEN_TYPE_ANONYMOUS));
+	}
+
+	
 	
 }

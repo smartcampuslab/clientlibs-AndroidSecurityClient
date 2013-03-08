@@ -15,6 +15,8 @@
  */
 package eu.trentorise.smartcampus.ac.model;
 
+import java.io.Serializable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,7 +24,8 @@ import org.json.JSONObject;
  * 
  * @author raman
  */
-public class Attribute {
+public class Attribute implements Serializable {
+	private static final long serialVersionUID = -271367534838136182L;
 
 	private Authority authority;
 
@@ -110,6 +113,18 @@ public class Attribute {
 		} catch (JSONException e) {
 			return null;
 		}
+	}
+
+	/**
+	 * @return
+	 * @throws JSONException 
+	 */
+	public JSONObject toJSON() throws JSONException {
+		JSONObject json = new JSONObject();
+		json.put("key", key);
+		json.put("value", value);
+		json.put("authority", authority.toJSON());
+		return json;
 	}
 
 }

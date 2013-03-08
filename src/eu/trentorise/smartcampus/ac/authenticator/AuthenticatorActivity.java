@@ -15,6 +15,8 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.ac.authenticator;
 
+import org.json.JSONException;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.ProgressDialog;
@@ -71,7 +73,7 @@ public class AuthenticatorActivity  extends AuthActivity {
 						}
 					}
 					if (result != null && result.getToken() != null) {
-						getAuthListener().onTokenAcquired(result.getToken());
+						getAuthListener().onTokenAcquired(result);
 					} else {
 						getAuthListener().onAuthFailed("Failed to create anonymous account");
 					}
@@ -108,21 +110,28 @@ public class AuthenticatorActivity  extends AuthActivity {
 	private class AMAuthListener implements AuthListener {
 
 		@Override
-		public void onTokenAcquired(String token) {
+		public void onTokenAcquired(UserData data) {
 			 final Account account = new Account(Constants.getAccountName(AuthenticatorActivity.this), Constants.getAccountType(AuthenticatorActivity.this));
-			 mAccountManager.addAccountExplicitly(account, null, null);
+			 Bundle dataBundle = new Bundle();
+			 try {
+				dataBundle.putSerializable(AccountManager.KEY_USERDATA, data.toJSON().toString());
+			} catch (JSONException e1) {
+				Log.e(AuthenticatorActivity.class.getName(), "Failed to write UserData: "+e1.getMessage());
+			}
+			 mAccountManager.addAccountExplicitly(account, null, dataBundle);
 			 
 	         ContentResolver.setSyncAutomatically(account,ContactsContract.AUTHORITY, true);
 	          
 		     Intent request = getIntent();
-			 if (request.getStringExtra(Constants.KEY_AUTHORITY)!=null)
-				 mAccountManager.setAuthToken(account, request.getStringExtra(Constants.KEY_AUTHORITY), token);
-			 else mAccountManager.setAuthToken(account, Constants.AUTHORITY_DEFAULT, token);
+		     final String authority = request.getStringExtra(Constants.KEY_AUTHORITY)!=null ? 
+		    		 request.getStringExtra(Constants.KEY_AUTHORITY) : Constants.AUTHORITY_DEFAULT;
+				 
+		     mAccountManager.setAuthToken(account, authority, data.getToken());
 
 			 final Intent intent = new Intent();
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.getAccountName(AuthenticatorActivity.this));
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Constants.getAccountType(AuthenticatorActivity.this));
-			 intent.putExtra(AccountManager.KEY_AUTHTOKEN, token);
+			 intent.putExtra(AccountManager.KEY_AUTHTOKEN, data.getToken());
 			 setAccountAuthenticatorResult(intent.getExtras());
 			 setResult(RESULT_OK, intent);
 			 
@@ -130,7 +139,8 @@ public class AuthenticatorActivity  extends AuthActivity {
 			 if (sender != null) {
 				 try {
 						Intent add = new Intent();
-						add.putExtra(AccountManager.KEY_AUTHTOKEN, token);
+						add.putExtra(AccountManager.KEY_AUTHTOKEN, data.getToken());
+						add.putExtra(AccountManager.KEY_USERDATA, data);
 						sender.sendIntent(AuthenticatorActivity.this, 0, add, null, null);
 					} catch (SendIntentException e) {
 						e.printStackTrace();

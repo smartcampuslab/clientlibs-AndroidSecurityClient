@@ -209,7 +209,7 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
 			if (user == null || user.getToken() == null) {
 				authListener.onAuthFailed("Token validation failed");
 			} else {
-				authListener.onTokenAcquired(user.getToken());
+				authListener.onTokenAcquired(user);
 			}
 		}
 		

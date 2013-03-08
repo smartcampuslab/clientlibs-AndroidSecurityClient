@@ -32,6 +32,7 @@ import android.net.Uri;
 import android.util.Log;
 import eu.trentorise.smartcampus.ac.Constants;
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
+import eu.trentorise.smartcampus.ac.model.UserData;
 /**
  * Implementation of the {@link SCAccessProvider} interface relying on the token
  * stored in shared preferences and using the {@link EmbeddedAuthActivity} activity.
@@ -137,6 +138,16 @@ public class EmbeddedSCAccessProvider implements SCAccessProvider{
 
 	@Override
 	public String promote(Activity activity, String authority, String authToken) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public UserData readUserData(Context ctx, String authority) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Boolean isUserAnonymous(Context ctx, String authority) {
 		throw new UnsupportedOperationException();
 	}
 

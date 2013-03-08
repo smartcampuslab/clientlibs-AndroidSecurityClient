@@ -16,6 +16,7 @@
 
 package eu.trentorise.smartcampus.ac.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +28,8 @@ import org.json.JSONObject;
  * @author raman
  *
  */
-public class UserData {
+public class UserData implements Serializable {
+	private static final long serialVersionUID = 3056935916401305465L;
 
 	private String userId;
 	private long socialId;
@@ -149,4 +151,19 @@ public class UserData {
 		}
 	}
 
+	public JSONObject toJSON() throws JSONException {
+		JSONObject object = new JSONObject();
+		object.put("userId", userId);
+		object.put("socialId", socialId);
+		object.put("token", token);
+		object.put("expires", expires);
+		List<JSONObject> attrs = new ArrayList<JSONObject>();
+		object.put("attributes", attrs);
+		if (attributes != null) {
+			for (Attribute a : attributes) {
+				attrs.add(a.toJSON());
+			}
+		}
+		return object;
+	}
 }

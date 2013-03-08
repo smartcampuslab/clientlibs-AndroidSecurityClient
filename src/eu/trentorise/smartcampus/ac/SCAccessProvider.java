@@ -17,6 +17,8 @@ package eu.trentorise.smartcampus.ac;
 
 import java.io.IOException;
 
+import eu.trentorise.smartcampus.ac.model.UserData;
+
 import android.accounts.AuthenticatorException;
 import android.accounts.OperationCanceledException;
 import android.app.Activity;
@@ -91,6 +93,22 @@ public interface SCAccessProvider {
 	 * @return
 	 */
 	String readToken(Context ctx, String authority); 
+
+	/**
+	 * Try to read the user data stored, without requesting new token or signaling to the user
+	 * @param ctx
+	 * @param authority
+	 * @return {@link UserData} instance describing the user SC account information
+	 */
+	UserData readUserData(Context ctx, String authority); 
+
+	/**
+	 * Return true if the currently registered account is anonymous. If the user is not found, return null
+	 * @param ctx
+	 * @param authority
+	 * @return
+	 */
+	Boolean isUserAnonymous(Context ctx, String authority);
 	
 	/**
 	 * Promote the current anonymous account to the new one defined by the authority parameter.
