@@ -147,7 +147,7 @@ public class EmbeddedSCAccessProvider implements SCAccessProvider{
 	}
 
 	@Override
-	public Boolean isUserAnonymous(Context ctx, String authority) {
+	public boolean isUserAnonymous(Context ctx) {
 		throw new UnsupportedOperationException();
 	}
 

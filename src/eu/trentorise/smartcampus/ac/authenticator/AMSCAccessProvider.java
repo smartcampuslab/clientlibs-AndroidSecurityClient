@@ -223,9 +223,9 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	}
 
 	@Override
-	public Boolean isUserAnonymous(Context ctx, String authority) {
-		UserData data = readUserData(ctx, authority);
-		if (data == null)  return null;
+	public boolean isUserAnonymous(Context ctx) {
+		UserData data = readUserData(ctx, Constants.TOKEN_TYPE_ANONYMOUS);
+		if (data == null)  return false;
 		return data.getAttributes()== null || (data.getAttributes().size() == 1 && data.getAttributes().get(0).getAuthority().getName().equals(Constants.TOKEN_TYPE_ANONYMOUS));
 	}
 

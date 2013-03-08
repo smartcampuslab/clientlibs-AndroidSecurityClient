@@ -103,12 +103,12 @@ public interface SCAccessProvider {
 	UserData readUserData(Context ctx, String authority); 
 
 	/**
-	 * Return true if the currently registered account is anonymous. If the user is not found, return null
+	 * Return true if the currently registered account is anonymous. 
 	 * @param ctx
 	 * @param authority
 	 * @return
 	 */
-	Boolean isUserAnonymous(Context ctx, String authority);
+	boolean isUserAnonymous(Context ctx);
 	
 	/**
 	 * Promote the current anonymous account to the new one defined by the authority parameter.
