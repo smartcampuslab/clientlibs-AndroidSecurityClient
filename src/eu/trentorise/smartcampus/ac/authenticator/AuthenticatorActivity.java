@@ -123,10 +123,12 @@ public class AuthenticatorActivity  extends AuthActivity {
 	         ContentResolver.setSyncAutomatically(account,ContactsContract.AUTHORITY, true);
 	          
 		     Intent request = getIntent();
-		     final String authority = request.getStringExtra(Constants.KEY_AUTHORITY)!=null ? 
+		     final String authority = request.getStringExtra(Constants.KEY_AUTHORITY)!=null && 
+		    		 !request.getStringExtra(Constants.KEY_AUTHORITY).equals(Constants.TOKEN_TYPE_ANONYMOUS) ? 
 		    		 request.getStringExtra(Constants.KEY_AUTHORITY) : Constants.AUTHORITY_DEFAULT;
 				 
 		     mAccountManager.setAuthToken(account, authority, data.getToken());
+		     if (request.getStringExtra(Constants.KEY_AUTHORITY).equals(Constants.TOKEN_TYPE_ANONYMOUS)) mAccountManager.setAuthToken(account, Constants.TOKEN_TYPE_ANONYMOUS, data.getToken());
 
 			 final Intent intent = new Intent();
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.getAccountName(AuthenticatorActivity.this));

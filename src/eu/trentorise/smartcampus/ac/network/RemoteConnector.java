@@ -131,7 +131,7 @@ public class RemoteConnector {
     public static UserData getUser(String host, String token) throws SecurityException, AcServiceException {
     	String json = getJSON(host, "/users/me", token);
     	try {
-			return UserData.valueOf(new JSONObject(json));
+			return UserData.valueOfServiceData(new JSONObject(json));
 		} catch (JSONException e) {
 			throw new AcServiceException(e);
 		} 

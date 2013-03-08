@@ -16,7 +16,7 @@
 -->
 <resources>
     <string name="ui_auth_activity_title">SmartCampus</string>
-    
+   
     <string name="token_required">Please login before proceeding with the application.</string>
     <string name="auth_failed">Application initialization failed.</string>
     

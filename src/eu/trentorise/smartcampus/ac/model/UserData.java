@@ -129,7 +129,7 @@ public class UserData implements Serializable {
 	 * @param json
 	 * @return
 	 */
-	public static UserData valueOf(JSONObject json) {
+	public static UserData valueOfServiceData(JSONObject json) {
 		if (json == null) return null;
 		UserData data = new UserData();
 		try {
@@ -139,6 +139,32 @@ public class UserData implements Serializable {
 			data.setUserId(json.getString("id"));
 			if (json.has("attributes")) {
 				JSONArray array = json.getJSONArray("attributes");
+				data.setAttributes(new ArrayList<Attribute>(array.length()));
+				for (int i = 0 ; i < array.length(); i++) {
+					Attribute a = Attribute.valueOf(array.getJSONObject(i));
+					if (a != null) data.getAttributes().add(a);
+				}
+			}
+			return data;
+		} catch (JSONException e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * @param json
+	 * @return
+	 */
+	public static UserData valueOf(JSONObject json) {
+		if (json == null) return null;
+		UserData data = new UserData();
+		try {
+			data.setExpires(json.getLong("expires"));
+			data.setSocialId(json.getLong("socialId"));
+			data.setToken(json.getString("token"));
+			data.setUserId(json.getString("userId"));
+			if (json.has("attributes")) {
+				JSONArray array = new JSONArray(json.getString("attributes"));
 				data.setAttributes(new ArrayList<Attribute>(array.length()));
 				for (int i = 0 ; i < array.length(); i++) {
 					Attribute a = Attribute.valueOf(array.getJSONObject(i));
