@@ -50,7 +50,7 @@ public class ACService {
 	 *         exist
 	 * @throws AcServiceException
 	 */
-	UserData getUserByToken(String authToken) throws AcServiceException, SecurityException {
+	public UserData getUserByToken(String authToken) throws AcServiceException, SecurityException {
 		return RemoteConnector.getUser(mHost, authToken);
 	}
 
@@ -63,7 +63,7 @@ public class ACService {
 	 *         otherwise
 	 * @throws AcServiceException
 	 */
-	boolean isValidUser(String authToken) throws AcServiceException {
+	public boolean isValidUser(String authToken) throws AcServiceException {
 		return RemoteConnector.isValidUser(mHost, authToken);
 	}
 
@@ -74,7 +74,7 @@ public class ACService {
 	 * @return
 	 * @throws AcServiceException
 	 */
-	boolean isAnonymousUser(String authToken) throws AcServiceException {
+	public boolean isAnonymousUser(String authToken) throws AcServiceException {
 		return RemoteConnector.isAnonymousUser(mHost, authToken);
 	}
 	
@@ -94,7 +94,7 @@ public class ACService {
 	 * @return The set of attributes that match the parameters
 	 * @throws AcServiceException
 	 */
-	List<Attribute> getUserAttributes(String authToken, String authority, String key) throws AcServiceException {
+	public List<Attribute> getUserAttributes(String authToken, String authority, String key) throws AcServiceException {
 		return RemoteConnector.getUserAttributes(mHost, authority, key, authToken);
 	}
 	
@@ -105,7 +105,7 @@ public class ACService {
 	 * @return true if the resource is available and false otherwise
 	 * @throws AcServiceException
 	 */
-	boolean canReadResource(String authToken, String resourceId) throws AcServiceException {
+	public boolean canReadResource(String authToken, String resourceId) throws AcServiceException {
 		return RemoteConnector.canReadResource(mHost, authToken, resourceId);
 	}
 
