@@ -215,6 +215,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 		String token = am.peekAuthToken(account, authority);
 		if (token == null) return null;
 		String userDataString = am.getUserData(account, AccountManager.KEY_USERDATA);
+		if (userDataString == null) return null;
 		try {
 			return UserData.valueOf(new JSONObject(userDataString));
 		} catch (JSONException e) {
