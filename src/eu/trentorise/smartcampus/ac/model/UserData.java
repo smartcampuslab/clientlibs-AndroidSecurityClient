@@ -129,10 +129,11 @@ public class UserData implements Serializable {
 	 * @param json
 	 * @return
 	 */
-	public static UserData valueOfServiceData(JSONObject json) {
-		if (json == null) return null;
+	public static UserData valueOfServiceData(JSONObject in) {
+		if (in == null) return null;
 		UserData data = new UserData();
 		try {
+			JSONObject json = in.getJSONObject("User");
 			data.setExpires(json.getLong("expTime"));
 			data.setSocialId(json.getLong("socialId"));
 			data.setToken(json.getString("authToken"));
@@ -192,4 +193,14 @@ public class UserData implements Serializable {
 		}
 		return object;
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "UserData [userId=" + userId + ", socialId=" + socialId
+				+ ", attributes=" + attributes + "]";
+	}
+	
+	
 }

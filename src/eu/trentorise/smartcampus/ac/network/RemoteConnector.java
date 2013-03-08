@@ -177,14 +177,12 @@ public class RemoteConnector {
 
 	private static String getJSON(String host, String service, String token) throws SecurityException, AcServiceException {
         final HttpResponse resp;
-        final HttpEntity entity = null;
         Log.i(TAG, "reading data: " + service);
-        final HttpPost post = new HttpPost(host + service);
-        post.setEntity(entity);
-        post.setHeader("Accept", "application/json");
-        post.setHeader("AUTH_TOKEN",token);
+        final HttpGet get = new HttpGet(host + service);
+        get.setHeader("Accept", "application/json");
+        get.setHeader("AUTH_TOKEN",token);
         try {
-            resp = getHttpClient().execute(post);
+            resp = getHttpClient().execute(get);
             String response = EntityUtils.toString(resp.getEntity());
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 return response;
