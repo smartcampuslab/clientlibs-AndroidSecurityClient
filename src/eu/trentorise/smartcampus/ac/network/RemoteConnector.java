@@ -190,12 +190,12 @@ public class RemoteConnector {
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_FORBIDDEN) {
                 throw new SecurityException();
             }
-            throw new AcServiceException("Error validating " + resp.getStatusLine());
+            throw new AcServiceException("Error reading "+service +": " + resp.getStatusLine());
         } catch (final Exception e) {
-            Log.e(TAG, "IOException when getting authtoken", e);
+            Log.e(TAG, "IOException when getting REST data", e);
             throw new AcServiceException(e.getMessage(),e);
         } finally {
-            Log.v(TAG, "getAuthtoken completing");
+            Log.v(TAG, "getJSON complete");
         }
 
 	}
