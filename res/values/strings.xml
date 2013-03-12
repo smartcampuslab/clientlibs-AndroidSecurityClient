@@ -22,5 +22,5 @@
     
     <string name="token_expired">SmartCampus login expired.</string>
     <string name="auth_in_progress">Authentication in progress...</string>
-  
+    <string name="auth_question">Would you like to authenticate yourself?</string>
 </resources>

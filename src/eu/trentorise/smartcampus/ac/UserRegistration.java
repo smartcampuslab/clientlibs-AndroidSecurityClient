@@ -44,7 +44,7 @@ public class UserRegistration {
 					}
 				};
 				
-				builder.setCancelable(false).setMessage("Would you authenticate yourself?")
+				builder.setCancelable(false).setMessage(ctx.getString(R.string.auth_question))
 						.setPositiveButton(android.R.string.yes, updateDialogClickListener)
 						.setNegativeButton(android.R.string.no, updateDialogClickListener).show();
 			
