@@ -102,6 +102,13 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
         mContent.addView(webViewContainer);
     } 
     
+    @Override
+    public void onBackPressed() {
+    	super.onBackPressed();
+    	authListener.onAuthCancelled();
+
+    }
+    
     private void createCrossImage() {
         mCrossImage = new ImageView(this);
         // Dismiss the dialog when user click on the 'x'
