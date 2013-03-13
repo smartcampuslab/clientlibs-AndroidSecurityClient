@@ -20,7 +20,7 @@
     <string name="token_required">E\' necessario effettuare il login prima di utilizzare l\'applicazione.</string>
     <string name="auth_failed">Inizializzazione dell\'app fallita.</string>
     
-    <string name="token_expired">La sessione SmartCampus è scaduta.</string>
+    <string name="token_expired">La sessione dell\'app è scaduta.</string>
     <string name="auth_in_progress">Autenticazione in corso...</string>
     <string name="auth_question">Desideri autenticarti?</string>
 </resources>
