@@ -168,7 +168,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	}
 
 	@Override
-	public String promote(final Activity activity, String inAuthority, String token) {
+	public String promote(final Activity activity, String inAuthority, final String token) {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		final AccountManager am = AccountManager.get(activity);
 		Bundle options = new Bundle();
@@ -196,8 +196,13 @@ public class AMSCAccessProvider implements SCAccessProvider {
 							} else if (bundle.getString(AccountManager.KEY_AUTHTOKEN) != null){
 								 am.setAuthToken(a, authority, bundle.getString(AccountManager.KEY_AUTHTOKEN));
 								 am.addAccountExplicitly(a, null, null);
+							// no token acquired
+							} else {
+								storeAnonymousToken(token, authority, am, a);
 							}
 						} catch (Exception e) {
+							// revert the invalidated token
+							storeAnonymousToken(token, authority, am, a);
 							return;
 						}
 					}
@@ -205,6 +210,15 @@ public class AMSCAccessProvider implements SCAccessProvider {
 				, 
 				null);
 		return null;
+	}
+
+	private void storeAnonymousToken(final String token,
+			final String authority, final AccountManager am,
+			final Account a) {
+		if (token == null) return;
+		am.setAuthToken(a, authority, token);
+		am.setAuthToken(a, Constants.TOKEN_TYPE_ANONYMOUS, token);
+		am.addAccountExplicitly(a, null, null);
 	}
 
 	@Override
