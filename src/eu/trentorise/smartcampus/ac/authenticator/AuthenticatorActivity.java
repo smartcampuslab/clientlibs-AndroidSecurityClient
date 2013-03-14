@@ -118,6 +118,12 @@ public class AuthenticatorActivity  extends AuthActivity {
 			} catch (JSONException e1) {
 				Log.e(AuthenticatorActivity.class.getName(), "Failed to write UserData: "+e1.getMessage());
 			}
+			 Account[] accounts = mAccountManager.getAccountsByType(Constants.getAccountType(AuthenticatorActivity.this));
+			 if (accounts != null) {
+				for (int i = 0; i < accounts.length; i++) {
+					mAccountManager.removeAccount(accounts[i], null, null);
+				}
+			 }
 			 mAccountManager.addAccountExplicitly(account, null, dataBundle);
 			 
 	         ContentResolver.setSyncAutomatically(account,ContactsContract.AUTHORITY, true);

@@ -85,9 +85,9 @@ public class AMSCAccessProvider implements SCAccessProvider {
 								if (launch != null) {
 										launch.putExtra(Constants.KEY_AUTHORITY, authority);
 										activity.startActivityForResult(launch, SC_AUTH_ACTIVITY_REQUEST_CODE);
-								} else if (bundle.getString(AccountManager.KEY_AUTHTOKEN) != null){
-									 am.setAuthToken(a, authority, bundle.getString(AccountManager.KEY_AUTHTOKEN));
-									 am.addAccountExplicitly(a, null, null);
+//								} else if (bundle.getString(AccountManager.KEY_AUTHTOKEN) != null){
+//									 am.setAuthToken(a, authority, bundle.getString(AccountManager.KEY_AUTHTOKEN));
+//									 am.addAccountExplicitly(a, null, null);
 								}
 							} catch (Exception e) {
 								return;
@@ -195,7 +195,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 									activity.startActivityForResult(launch, SC_AUTH_ACTIVITY_REQUEST_CODE);
 							} else if (bundle.getString(AccountManager.KEY_AUTHTOKEN) != null){
 								 am.setAuthToken(a, authority, bundle.getString(AccountManager.KEY_AUTHTOKEN));
-								 am.addAccountExplicitly(a, null, null);
+//								 am.addAccountExplicitly(a, null, null);
 							// no token acquired
 							} else {
 								storeAnonymousToken(token, authority, am, a);

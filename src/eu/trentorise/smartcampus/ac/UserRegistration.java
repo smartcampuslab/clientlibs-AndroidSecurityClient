@@ -28,8 +28,8 @@ import eu.trentorise.smartcampus.ac.authenticator.AMSCAccessProvider;
  */
 public class UserRegistration {
 	static AlertDialog.Builder builder;
-	public static void upgradeuser(final Context ctx, final Activity activity) {
-			builder = new AlertDialog.Builder(ctx);
+	public static void upgradeuser(final Activity activity) {
+			builder = new AlertDialog.Builder(activity);
 			final AMSCAccessProvider accessprovider = new AMSCAccessProvider();
 			//
 				// dialogbox for registration
@@ -44,7 +44,7 @@ public class UserRegistration {
 							switch (which) {
 							case DialogInterface.BUTTON_POSITIVE:
 								//upgrade the user
-								accessprovider.promote(activity, null, accessprovider.readToken(ctx, null));
+								accessprovider.promote(activity, null, accessprovider.readToken(activity, null));
 								break;
 
 							case DialogInterface.BUTTON_NEGATIVE:
@@ -57,7 +57,7 @@ public class UserRegistration {
 					}
 				};
 				
-				builder.setCancelable(false).setMessage(ctx.getString(R.string.auth_question))
+				builder.setCancelable(false).setMessage(activity.getString(R.string.auth_question))
 						.setPositiveButton(android.R.string.yes, updateDialogClickListener)
 						.setNegativeButton(android.R.string.no, updateDialogClickListener).show();
 			
