@@ -57,9 +57,9 @@ public class UserRegistration {
 					}
 				};
 				
-				builder.setCancelable(false).setMessage(activity.getString(R.string.auth_question))
+				builder.setCancelable(false).setMessage(activity.getString(R.string.auth_question_upgrade))
 						.setPositiveButton(android.R.string.yes, updateDialogClickListener)
-						.setNegativeButton(android.R.string.no, updateDialogClickListener).show();
+						.setNegativeButton(R.string.not_now, updateDialogClickListener).show();
 			
 		
 }
