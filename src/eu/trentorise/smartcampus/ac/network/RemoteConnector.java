@@ -125,7 +125,9 @@ public class RemoteConnector {
         HttpConnectionParams.setConnectionTimeout(params, HTTP_REQUEST_TIMEOUT_MS);
         HttpConnectionParams.setSoTimeout(params, HTTP_REQUEST_TIMEOUT_MS);
         ConnManagerParams.setTimeout(params, HTTP_REQUEST_TIMEOUT_MS);
-        return httpClient;
+        
+        // return httpClient;
+        return new HttpsClientBuilder().getNewHttpClient(params);
     }
 
     public static UserData getUser(String host, String token) throws SecurityException, AcServiceException {
