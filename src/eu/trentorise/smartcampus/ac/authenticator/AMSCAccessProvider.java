@@ -165,6 +165,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 //		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		AccountManager am = AccountManager.get(context);
 		am.invalidateAuthToken(Constants.getAccountType(context), readToken(context, inAuthority));
+		am.removeAccount(new Account(Constants.getAccountName(context), Constants.getAccountType(context)), null, null);
 	}
 
 	@Override
