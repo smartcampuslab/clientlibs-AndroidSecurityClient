@@ -114,7 +114,7 @@ public class AuthenticatorActivity  extends AuthActivity {
 			 final Account account = new Account(Constants.getAccountName(AuthenticatorActivity.this), Constants.getAccountType(AuthenticatorActivity.this));
 			 Bundle dataBundle = new Bundle();
 			 try {
-				dataBundle.putSerializable(AccountManager.KEY_USERDATA, data.toJSON().toString());
+				dataBundle.putString(AccountManager.KEY_USERDATA, data.toJSON().toString());
 			} catch (JSONException e1) {
 				Log.e(AuthenticatorActivity.class.getName(), "Failed to write UserData: "+e1.getMessage());
 			}
@@ -140,6 +140,11 @@ public class AuthenticatorActivity  extends AuthActivity {
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.getAccountName(AuthenticatorActivity.this));
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Constants.getAccountType(AuthenticatorActivity.this));
 			 intent.putExtra(AccountManager.KEY_AUTHTOKEN, data.getToken());
+
+			 // this is workaround that is needed on some devices: without it the 
+			 // getuserdata may return null. the problem is with the bug in the in-memory account data caching
+			 mAccountManager.setUserData(account, AccountManager.KEY_USERDATA, dataBundle.getString(AccountManager.KEY_USERDATA));
+			 
 			 setAccountAuthenticatorResult(intent.getExtras());
 			 setResult(RESULT_OK, intent);
 			 

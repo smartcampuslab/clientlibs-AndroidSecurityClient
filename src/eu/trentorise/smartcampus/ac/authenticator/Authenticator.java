@@ -27,9 +27,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import eu.trentorise.smartcampus.ac.Constants;
-import eu.trentorise.smartcampus.ac.DeviceUuidFactory;
-import eu.trentorise.smartcampus.ac.model.UserData;
-import eu.trentorise.smartcampus.ac.network.RemoteConnector;
 
 /**
  * {@link AbstractAccountAuthenticator} implementation for SmartCampus authentication mechanism. 
