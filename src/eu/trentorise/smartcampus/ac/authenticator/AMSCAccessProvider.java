@@ -17,6 +17,9 @@ package eu.trentorise.smartcampus.ac.authenticator;
 
 import java.io.IOException;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
@@ -31,6 +34,7 @@ import android.content.IntentSender.SendIntentException;
 import android.os.Bundle;
 import eu.trentorise.smartcampus.ac.Constants;
 import eu.trentorise.smartcampus.ac.SCAccessProvider;
+import eu.trentorise.smartcampus.ac.model.UserData;
 
 /**
  *  Implementation of the {@link SCAccessProvider} interface relying on the token
@@ -45,7 +49,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	public String readToken(Context ctx, String inAuthority) {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		AccountManager am = AccountManager.get(ctx);
-		return am.peekAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE), authority);
+		return am.peekAuthToken(new Account(Constants.getAccountName(ctx), Constants.getAccountType(ctx)), authority);
 	}
 
 	@Override
@@ -53,7 +57,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 			IOException {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		AccountManager am = AccountManager.get(ctx);
-		AccountManagerFuture<Bundle> future = am.getAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE), authority, true, null, null); 
+		AccountManagerFuture<Bundle> future = am.getAuthToken(new Account(Constants.getAccountName(ctx), Constants.getAccountType(ctx)), authority, true, null, null); 
 		String token = null;
 		if (future.isDone()) {
 			token = future.getResult().getString(AccountManager.KEY_AUTHTOKEN);
@@ -64,11 +68,12 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	@Override
 	public String getAuthToken(final Activity activity, String inAuthority) throws OperationCanceledException, AuthenticatorException, IOException {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
-		AccountManager am = AccountManager.get(activity);
-		String token = am.peekAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE), authority);
+		final AccountManager am = AccountManager.get(activity);
+		String token = am.peekAuthToken(new Account(Constants.getAccountName(activity), Constants.getAccountType(activity)), authority);
 		if (token == null)
 		{
-			am.getAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE), authority, false, 
+			final Account a = new Account(Constants.getAccountName(activity), Constants.getAccountType(activity));
+			am.getAuthToken(a, authority, false, 
 					new AccountManagerCallback<Bundle>() {
 	
 						@Override
@@ -80,6 +85,9 @@ public class AMSCAccessProvider implements SCAccessProvider {
 								if (launch != null) {
 										launch.putExtra(Constants.KEY_AUTHORITY, authority);
 										activity.startActivityForResult(launch, SC_AUTH_ACTIVITY_REQUEST_CODE);
+//								} else if (bundle.getString(AccountManager.KEY_AUTHTOKEN) != null){
+//									 am.setAuthToken(a, authority, bundle.getString(AccountManager.KEY_AUTHTOKEN));
+//									 am.addAccountExplicitly(a, null, null);
 								}
 							} catch (Exception e) {
 								return;
@@ -97,7 +105,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	public String getAuthToken(Context ctx, String inAuthority, IntentSender intentSender) throws OperationCanceledException, AuthenticatorException, IOException {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		AccountManager am = AccountManager.get(ctx);
-		AccountManagerFuture<Bundle> future = am.getAuthToken(new Account(Constants.ACCOUNT_NAME, Constants.ACCOUNT_TYPE), authority, false, new OnTokenAcquired(ctx, authority, intentSender), null);
+		AccountManagerFuture<Bundle> future = am.getAuthToken(new Account(Constants.getAccountName(ctx), Constants.getAccountType(ctx)), authority, false, new OnTokenAcquired(ctx, authority, intentSender), null);
 		String token = null;
 		if (future.isDone()) {
 			token = future.getResult().getString(AccountManager.KEY_AUTHTOKEN);
@@ -156,7 +164,87 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	public void invalidateToken(Context context, String inAuthority) {
 //		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		AccountManager am = AccountManager.get(context);
-		am.invalidateAuthToken(Constants.ACCOUNT_TYPE, readToken(context, inAuthority));
+		am.invalidateAuthToken(Constants.getAccountType(context), readToken(context, inAuthority));
+		am.removeAccount(new Account(Constants.getAccountName(context), Constants.getAccountType(context)), null, null);
 	}
 
+	@Override
+	public String promote(final Activity activity, String inAuthority, final String token) {
+		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
+		final AccountManager am = AccountManager.get(activity);
+		Bundle options = new Bundle();
+		if (token != null) {
+			options.putString(Constants.PROMOTION_TOKEN, token);
+		}
+		final Account a = new Account(Constants.getAccountName(activity), Constants.getAccountType(activity));
+		am.invalidateAuthToken(Constants.getAccountType(activity), token);
+		
+		am.getAuthToken(
+				new Account(Constants.getAccountName(activity), Constants.getAccountType(activity)), 
+				authority, 
+				options, 
+				activity,
+				new AccountManagerCallback<Bundle>() {
+					@Override
+					public void run(AccountManagerFuture<Bundle> result) {
+						Bundle bundle = null;
+						try {
+							bundle = result.getResult();
+							Intent launch = (Intent) bundle.get(AccountManager.KEY_INTENT);
+							if (launch != null) {
+									launch.putExtra(Constants.KEY_AUTHORITY, authority);
+									activity.startActivityForResult(launch, SC_AUTH_ACTIVITY_REQUEST_CODE);
+							} else if (bundle.getString(AccountManager.KEY_AUTHTOKEN) != null){
+								 am.setAuthToken(a, authority, bundle.getString(AccountManager.KEY_AUTHTOKEN));
+//								 am.addAccountExplicitly(a, null, null);
+							// no token acquired
+							} else {
+								storeAnonymousToken(token, authority, am, a);
+							}
+						} catch (Exception e) {
+							// revert the invalidated token
+							storeAnonymousToken(token, authority, am, a);
+							return;
+						}
+					}
+				}
+				, 
+				null);
+		return null;
+	}
+
+	private void storeAnonymousToken(final String token,
+			final String authority, final AccountManager am,
+			final Account a) {
+		if (token == null) return;
+		am.setAuthToken(a, authority, token);
+		am.setAuthToken(a, Constants.TOKEN_TYPE_ANONYMOUS, token);
+		am.addAccountExplicitly(a, null, null);
+	}
+
+	@Override
+	public UserData readUserData(Context ctx, String inAuthority) {
+		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
+		AccountManager am = AccountManager.get(ctx);
+		Account account = new Account(Constants.getAccountName(ctx), Constants.getAccountType(ctx));
+		String token = am.peekAuthToken(account, authority);
+		if (token == null) return null;
+		String userDataString = am.getUserData(account, AccountManager.KEY_USERDATA);
+		if (userDataString == null) return null;
+		try {
+			return UserData.valueOf(new JSONObject(userDataString));
+		} catch (JSONException e) {
+			return null;
+		}
+	}
+
+	@Override
+	public boolean isUserAnonymous(Context ctx) {
+		UserData data = readUserData(ctx, Constants.TOKEN_TYPE_ANONYMOUS);
+		if (data == null)  return false;
+		return data.getAttributes()== null || (data.getAttributes().size() == 1 && data.getAttributes().get(0).getAuthority().getName().equals(Constants.TOKEN_TYPE_ANONYMOUS));
+	}
+
+	
+	
 }

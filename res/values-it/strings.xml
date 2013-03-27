@@ -16,13 +16,13 @@
 -->
 <resources>
     <string name="ui_auth_activity_title">SmartCampus</string>
-   
-    <string name="token_required">Please login before proceeding with the application.</string>
-    <string name="auth_failed">Application initialization failed. Try connecting again.</string>
     
-    <string name="token_expired">App login expired.</string>
-    <string name="auth_in_progress">Authentication in progress &#8230;</string>
-    <string name="auth_question_upgrade">Authenticate yourself with your Google account to exploit all offered functionalities</string>
-    <string name="not_now">Not now</string>
+    <string name="token_required">E\' necessario effettuare il login prima di utilizzare l\'applicazione.</string>
+    <string name="auth_failed">Errore nell\'inizializzazione dell\'app. Riprova a breve.</string>   
+    <string name="token_expired">La sessione dell\'app è scaduta.</string>
+    
+    <string name="auth_in_progress">Connessione in corso &#8230;</string>
+    <string name="auth_question_upgrade">Registrati con il tuo account Google e potrai accedere a tutte le funzionalitá offerte dall\'app</string>
+    <string name="not_now">Non adesso</string>
     
 </resources>

@@ -18,6 +18,8 @@ package eu.trentorise.smartcampus.ac;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 
 /**
@@ -30,15 +32,19 @@ public class Constants {
 	/**
 	 * Android account type used by the SmartCampus apps
 	 */
-    public static final String ACCOUNT_TYPE = "eu.trentorise.smartcampus.account";
+    public static final String ACCOUNT_TYPE_DEFAULT = "eu.trentorise.smartcampus.account";
     /**
      * Default token type
      */
     public static final String TOKEN_TYPE_DEFAULT = "eu.trentorise.smartcampus.account";
+    /**
+     * Anonymous account type
+     */
+    public static final String TOKEN_TYPE_ANONYMOUS = "anonymous";
 	/**
-	 * Account type name as presented in Accounts and Synnc interface
+	 * Account type name as presented in Accounts and Sync interface
 	 */
-    public static final String ACCOUNT_NAME = "SmartCampus";
+    public static final String ACCOUNT_NAME_DEFAULT = "SmartCampus";
     /**
      * App authority key
      */
@@ -66,6 +72,13 @@ public class Constants {
 	public static final CharSequence ACCOUNT_NOTIFICATION_TEXT = "Problem accessing SmartCampus account.";
 	public static final CharSequence ACCOUNT_NOTIFICATION_TITLE = "SmartCampus login required.";
 
+	/** Parameter carrying the current token in case of anonymous account promoted to registered one. */
+	public static final String PROMOTION_TOKEN = null;	
+
+	public static final String APP_METADATA_SHARED_PACKAGE = "SHARED_PACKAGE";
+	public static final String APP_METADATA_ACCOUNT_TYPE = "ACCOUNT_TYPE";
+	public static final String APP_METADATA_ACCOUNT_NAME = "ACCOUNT_NAME";
+	
 	// Shared package path
 	private static final String SHARED_PACKAGE = "eu.trentorise.smartcampus.launcher";
 	
@@ -77,7 +90,7 @@ public class Constants {
 	
 	private static final String P_AUTH_BASE_URL= "AUTH_BASE_URL";
 	
-	private static final String DEF_AUTH_BASE_URL = "https://ac.smartcampuslab.it/ac-service-provider-web/ac/";	
+	private static final String DEF_AUTH_BASE_URL = "https://ac.smartcampuslab.it/ac-service-provider-web/ac/";
 	private static String baseUrl = null;
 
 
@@ -138,6 +151,27 @@ public class Constants {
 		
 		return baseUrl;
 	}
+	
+	/**
+	 * Return account type used by the application
+	 * @param context
+	 * @return
+	 * @throws NameNotFoundException
+	 */
+	public static String getAccountType(Context context) {
+		return getAccountTypeFromMetadata(context);
+	}
+
+	/**
+	 * Return account name used by the application
+	 * @param context
+	 * @return
+	 * @throws NameNotFoundException
+	 */
+	public static String getAccountName(Context context) {
+		return getAccountNameFromMetadata(context);
+	}
+
 	/**
 	 * Write the authentication base URL to the shared preferences file.
 	 * @param context
@@ -160,8 +194,37 @@ public class Constants {
 	 * @throws NameNotFoundException
 	 */
 	public static SharedPreferences getPrefs(Context context) throws NameNotFoundException {
-		Context sharedContext = context.createPackageContext(SHARED_PACKAGE, ACCESS);
+		Context sharedContext = context.createPackageContext(getSharedPackageFromMetadata(context), ACCESS);
 		return sharedContext.getSharedPreferences(COMMON_PREF, ACCESS);
+	}
+
+	private static String getSharedPackageFromMetadata(Context ctx) {
+		try {
+			ApplicationInfo info = ctx.getPackageManager().getApplicationInfo(ctx.getPackageName(), PackageManager.GET_META_DATA);
+			if (info != null && info.metaData != null && info.metaData.containsKey(APP_METADATA_SHARED_PACKAGE)) 
+				return info.metaData.getString(APP_METADATA_SHARED_PACKAGE);
+		} catch (NameNotFoundException e) {
+		}
+		return SHARED_PACKAGE;
+	}
+	private static String getAccountTypeFromMetadata(Context ctx) {
+		try {
+			ApplicationInfo info = ctx.getPackageManager().getApplicationInfo(ctx.getPackageName(), PackageManager.GET_META_DATA);
+			if (info != null && info.metaData != null && info.metaData.containsKey(APP_METADATA_ACCOUNT_TYPE)) 
+				return info.metaData.getString(APP_METADATA_ACCOUNT_TYPE);
+		} catch (NameNotFoundException e) {
+		}
+		return ACCOUNT_TYPE_DEFAULT;
+	}
+	
+	private static String getAccountNameFromMetadata(Context ctx) {
+		try {
+			ApplicationInfo info = ctx.getPackageManager().getApplicationInfo(ctx.getPackageName(), PackageManager.GET_META_DATA);
+			if (info != null && info.metaData != null && info.metaData.containsKey(APP_METADATA_ACCOUNT_NAME)) 
+				return info.metaData.getString(APP_METADATA_ACCOUNT_NAME);
+		} catch (NameNotFoundException e) {
+		}
+		return ACCOUNT_NAME_DEFAULT;
 	}
 
 }

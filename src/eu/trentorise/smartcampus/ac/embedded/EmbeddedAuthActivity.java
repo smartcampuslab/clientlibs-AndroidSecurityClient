@@ -26,6 +26,7 @@ import android.util.Log;
 import eu.trentorise.smartcampus.ac.AuthActivity;
 import eu.trentorise.smartcampus.ac.AuthListener;
 import eu.trentorise.smartcampus.ac.Constants;
+import eu.trentorise.smartcampus.ac.model.UserData;
 
 /**
  * Implementation of the {@link AuthActivity} storing the acquired token
@@ -60,23 +61,23 @@ public class EmbeddedAuthActivity extends AuthActivity {
 	private class AMAuthListener implements AuthListener {
 
 		@Override
-		public void onTokenAcquired(String token) {
+		public void onTokenAcquired(UserData data) {
 			 final Intent intent = new Intent();
 		     Intent request = getIntent();
 			 try {
-				Preferences.setAuthToken(EmbeddedAuthActivity.this, token);
+				Preferences.setAuthToken(EmbeddedAuthActivity.this, data.getToken());
 			} catch (NameNotFoundException e1) {
 				Log.e(EmbeddedAuthActivity.class.getName(),""+e1.getMessage());
 			}
 			 //getSharedPreferences(Constants.ACCOUNT_TYPE,Context.MODE_PRIVATE).edit().putString(request.getStringExtra(Constants.KEY_AUTHORITY), token).commit();
-			 intent.putExtra(AccountManager.KEY_AUTHTOKEN, token);
+			 intent.putExtra(AccountManager.KEY_AUTHTOKEN, data.getToken());
 			 setResult(RESULT_OK, intent);
 
 			 IntentSender sender = request.getParcelableExtra(Constants.CALLBACK_INTENT);
 			 if (sender != null) {
 				 try {
 						Intent add = new Intent();
-						add.putExtra(AccountManager.KEY_AUTHTOKEN, token);
+						add.putExtra(AccountManager.KEY_AUTHTOKEN, data.getToken());
 						sender.sendIntent(EmbeddedAuthActivity.this, 0, add, null, null);
 					} catch (SendIntentException e) {
 						e.printStackTrace();

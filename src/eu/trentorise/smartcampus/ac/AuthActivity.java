@@ -24,6 +24,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.net.http.SslError;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +36,8 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import eu.trentorise.smartcampus.ac.model.UserData;
+import eu.trentorise.smartcampus.ac.network.RemoteConnector;
 
 /**
  * Abstract android activity to handle the authentication interactions. 
@@ -99,6 +102,13 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
         mContent.addView(webViewContainer);
     } 
     
+    @Override
+    public void onBackPressed() {
+    	super.onBackPressed();
+    	authListener.onAuthCancelled();
+
+    }
+    
     private void createCrossImage() {
         mCrossImage = new ImageView(this);
         // Dismiss the dialog when user click on the 'x'
@@ -146,7 +156,7 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
 			if (url.startsWith(Constants.getOkUrl(AuthActivity.this))){
 				String fragment = Uri.parse(url).getFragment();
 				if (fragment != null) {
-					authListener.onTokenAcquired(fragment);
+					new ValidateAsyncTask().execute(fragment);
 				} else {
 					authListener.onAuthFailed("No token provided");
 				}
@@ -190,4 +200,26 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
 		}
 	}
 
+	private class ValidateAsyncTask extends AsyncTask<String, Void, UserData> {
+
+		@Override
+		protected UserData doInBackground(String... params) {
+			try {
+				return RemoteConnector.validateAccessCode(Constants.getAuthUrl(AuthActivity.this), params[0]);
+			} catch (NameNotFoundException e) {
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(UserData user) {
+			if (user == null || user.getToken() == null) {
+				authListener.onAuthFailed("Token validation failed");
+			} else {
+				authListener.onTokenAcquired(user);
+			}
+		}
+		
+		
+	}
 }

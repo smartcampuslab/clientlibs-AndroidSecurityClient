@@ -15,6 +15,8 @@
  ******************************************************************************/
 package eu.trentorise.smartcampus.ac;
 
+import eu.trentorise.smartcampus.ac.model.UserData;
+
 /**
  * Callback interface for the authentication result handling
  * @author raman
@@ -26,7 +28,7 @@ public interface AuthListener {
 	 * Handler for successful authentication
 	 * @param token
 	 */
-	void onTokenAcquired(String token);
+	void onTokenAcquired(UserData data);
 	/**
 	 * Handler for the authentication error
 	 * @param error
