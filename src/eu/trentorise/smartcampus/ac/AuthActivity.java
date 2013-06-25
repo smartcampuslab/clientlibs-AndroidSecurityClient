@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -94,6 +95,7 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
         mWebView.setVerticalScrollBarEnabled(false);
         mWebView.setHorizontalScrollBarEnabled(false);
         mWebView.getSettings().setJavaScriptEnabled(true);
+        CookieSyncManager.createInstance(getApplicationContext());
         CookieManager cookieManager = CookieManager.getInstance(); 
         cookieManager.removeAllCookie();
         
