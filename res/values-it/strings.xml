@@ -21,7 +21,7 @@
     <string name="auth_failed">Errore nell\'inizializzazione dell\'app. Riprova a breve.</string>   
     <string name="token_expired">La sessione dell\'app è scaduta.</string>
     
-    <string name="auth_in_progress">Connessione in corso &#8230;</string>
+    <string name="auth_in_progress">Inizializzazione in corso &#8230;</string>
     <string name="auth_question_upgrade">Registrati con il tuo account Google e potrai accedere a tutte le funzionalitá offerte dall\'app</string>
     <string name="not_now">Non adesso</string>
     
