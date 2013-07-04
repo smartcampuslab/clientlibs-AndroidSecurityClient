@@ -177,7 +177,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 			options.putString(Constants.PROMOTION_TOKEN, token);
 		}
 		final Account a = new Account(Constants.getAccountName(activity), Constants.getAccountType(activity));
-		am.invalidateAuthToken(Constants.getAccountType(activity), token);
+		invalidateToken(activity, authority);
 		
 		am.getAuthToken(
 				new Account(Constants.getAccountName(activity), Constants.getAccountType(activity)), 
@@ -195,7 +195,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 									launch.putExtra(Constants.KEY_AUTHORITY, authority);
 									activity.startActivityForResult(launch, SC_AUTH_ACTIVITY_REQUEST_CODE);
 							} else if (bundle.getString(AccountManager.KEY_AUTHTOKEN) != null){
-								 am.setAuthToken(a, authority, bundle.getString(AccountManager.KEY_AUTHTOKEN));
+//								 am.setAuthToken(a, authority, bundle.getString(AccountManager.KEY_AUTHTOKEN));
 //								 am.addAccountExplicitly(a, null, null);
 							// no token acquired
 							} else {

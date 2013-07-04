@@ -118,13 +118,15 @@ public class AuthenticatorActivity  extends AuthActivity {
 			} catch (JSONException e1) {
 				Log.e(AuthenticatorActivity.class.getName(), "Failed to write UserData: "+e1.getMessage());
 			}
-			 Account[] accounts = mAccountManager.getAccountsByType(Constants.getAccountType(AuthenticatorActivity.this));
+			 Account[] accounts = mAccountManager.getAccountsByType(account.type);
 			 if (accounts != null) {
 				for (int i = 0; i < accounts.length; i++) {
 					mAccountManager.removeAccount(accounts[i], null, null);
 				}
 			 }
 			 mAccountManager.addAccountExplicitly(account, null, dataBundle);
+			 
+			 accounts = mAccountManager.getAccountsByType(account.type);
 			 
 	         ContentResolver.setSyncAutomatically(account,ContactsContract.AUTHORITY, true);
 	          
@@ -137,8 +139,8 @@ public class AuthenticatorActivity  extends AuthActivity {
 		     if (request.getStringExtra(Constants.KEY_AUTHORITY).equals(Constants.TOKEN_TYPE_ANONYMOUS)) mAccountManager.setAuthToken(account, Constants.TOKEN_TYPE_ANONYMOUS, data.getToken());
 
 			 final Intent intent = new Intent();
-			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.getAccountName(AuthenticatorActivity.this));
-			 intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Constants.getAccountType(AuthenticatorActivity.this));
+			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, account.name);
+			 intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, account.type);
 			 intent.putExtra(AccountManager.KEY_AUTHTOKEN, data.getToken());
 
 			 // this is workaround that is needed on some devices: without it the 
