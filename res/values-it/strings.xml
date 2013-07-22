@@ -25,4 +25,9 @@
     <string name="auth_question_upgrade">Registrati con il tuo account Google e potrai accedere a tutte le funzionalitá offerte dall\'app</string>
     <string name="not_now">Non adesso</string>
     
+    <string name="email_dialog_negative">No, grazie</string>
+    <string name="email_dialog_positive">Conferma</string>
+    <string name="email_dialog_description">Inserisci il tuo indirizzo email</string>
+    <string name="email_dialog_invalid">Email non valida</string>
+    
 </resources>

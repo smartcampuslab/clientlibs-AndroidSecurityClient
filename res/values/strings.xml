@@ -25,4 +25,9 @@
     <string name="auth_question_upgrade">Authenticate yourself with your Google account to exploit all offered functionalities</string>
     <string name="not_now">Not now</string>
     
+    <string name="email_dialog_negative">No, thanks</string>
+    <string name="email_dialog_positive">Confirm</string>
+    <string name="email_dialog_description">Type your email address</string>
+    <string name="email_dialog_invalid">The email address is not valid</string>
+    
 </resources>
