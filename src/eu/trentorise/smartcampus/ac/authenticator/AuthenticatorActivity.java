@@ -84,7 +84,7 @@ public class AuthenticatorActivity extends AuthActivity {
 		emailAlertDialogBuilder.setNegativeButton(getString(R.string.email_dialog_negative), new OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				getAuthListener().onAuthFailed("Failed to create email user account");
+				getAuthListener().onAuthCancelled();
 			}
 		});
 		emailAlertDialogBuilder.setPositiveButton(getString(R.string.email_dialog_positive), null);
