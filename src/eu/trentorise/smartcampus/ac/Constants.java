@@ -73,7 +73,8 @@ public class Constants {
 	public static final CharSequence ACCOUNT_NOTIFICATION_TITLE = "SmartCampus login required.";
 
 	/** Parameter carrying the current token in case of anonymous account promoted to registered one. */
-	public static final String PROMOTION_TOKEN = null;	
+	public static final String PROMOTION_TOKEN = "eu.trentorise.smartcampus.KEY_PROMOTION_TOKEN";	
+	public static final String OLD_DATA = "eu.trentorise.smartcampus.KEY_OLD_DATA";
 
 	public static final String APP_METADATA_SHARED_PACKAGE = "SHARED_PACKAGE";
 	public static final String APP_METADATA_ACCOUNT_TYPE = "ACCOUNT_TYPE";

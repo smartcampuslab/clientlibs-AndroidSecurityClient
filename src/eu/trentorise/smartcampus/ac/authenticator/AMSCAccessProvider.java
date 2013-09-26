@@ -172,18 +172,19 @@ public class AMSCAccessProvider implements SCAccessProvider {
 	public String promote(final Activity activity, String inAuthority, final String token) {
 		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		final AccountManager am = AccountManager.get(activity);
-		Bundle options = new Bundle();
-		if (token != null) {
-			options.putString(Constants.PROMOTION_TOKEN, token);
-		}
+//		Bundle options = new Bundle();
+//		if (token != null) {
+//			options.putString(Constants.PROMOTION_TOKEN, token);
+//		}
 		final Account a = new Account(Constants.getAccountName(activity), Constants.getAccountType(activity));
+		final String userDataString = am.getUserData(a, AccountManager.KEY_USERDATA);
+		
 		invalidateToken(activity, authority);
 		
 		am.getAuthToken(
 				new Account(Constants.getAccountName(activity), Constants.getAccountType(activity)), 
 				authority, 
-				options, 
-				activity,
+				false,
 				new AccountManagerCallback<Bundle>() {
 					@Override
 					public void run(AccountManagerFuture<Bundle> result) {
@@ -193,6 +194,8 @@ public class AMSCAccessProvider implements SCAccessProvider {
 							Intent launch = (Intent) bundle.get(AccountManager.KEY_INTENT);
 							if (launch != null) {
 									launch.putExtra(Constants.KEY_AUTHORITY, authority);
+									launch.putExtra(Constants.PROMOTION_TOKEN, token);
+									launch.putExtra(Constants.OLD_DATA, userDataString);
 									activity.startActivityForResult(launch, SC_AUTH_ACTIVITY_REQUEST_CODE);
 							} else if (bundle.getString(AccountManager.KEY_AUTHTOKEN) != null){
 //								 am.setAuthToken(a, authority, bundle.getString(AccountManager.KEY_AUTHTOKEN));

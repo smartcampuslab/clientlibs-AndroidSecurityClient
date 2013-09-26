@@ -137,10 +137,16 @@ public abstract class AuthActivity extends AccountAuthenticatorActivity {
         Intent intent = getIntent();
 		if (intent.getData() != null) {
 			String url = intent.getDataString();
-			if (intent.getStringExtra(Constants.KEY_AUTHORITY) != null && !intent.getStringExtra(Constants.KEY_AUTHORITY).equals(Constants.AUTHORITY_DEFAULT)) {
-				url += (url.endsWith("/")?intent.getStringExtra(Constants.KEY_AUTHORITY):"/"+intent.getStringExtra(Constants.KEY_AUTHORITY));
+			if (intent.getStringExtra(Constants.KEY_AUTHORITY) != null
+			    && !intent.getStringExtra(Constants.KEY_AUTHORITY).equals(Constants.AUTHORITY_DEFAULT)) {
+				url += (url.endsWith("/") ? intent.getStringExtra(Constants.KEY_AUTHORITY) : "/" + intent.getStringExtra(Constants.KEY_AUTHORITY));
 			}
-		  mWebView.loadUrl(url);
+
+			if (intent.hasExtra(Constants.PROMOTION_TOKEN)) {
+				url += "?oldToken="+intent.getStringExtra(Constants.PROMOTION_TOKEN);
+			}
+			
+			mWebView.loadUrl(url);
 		}
 	}
 

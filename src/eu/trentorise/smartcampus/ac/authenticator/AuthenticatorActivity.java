@@ -16,6 +16,7 @@
 package eu.trentorise.smartcampus.ac.authenticator;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -181,6 +182,20 @@ public class AuthenticatorActivity  extends AuthActivity {
 			 final Intent intent = new Intent();
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, Constants.getAccountName(AuthenticatorActivity.this));
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, Constants.getAccountType(AuthenticatorActivity.this));
+			 if (getIntent() != null && getIntent().hasExtra(Constants.PROMOTION_TOKEN)) {
+				 String uData = getIntent().getStringExtra(Constants.OLD_DATA);
+				 if (uData != null) {
+					 UserData data;
+					try {
+						data = UserData.valueOf(new JSONObject(uData));
+						getIntent().putExtra(Constants.KEY_AUTHORITY, Constants.TOKEN_TYPE_ANONYMOUS);
+						onTokenAcquired(data);
+						return;
+					} catch (JSONException e) {
+						Log.e(AuthenticatorActivity.class.getName(), "Failed to revert to old token: "+e.getMessage());
+					}
+				 } 
+			 }
 			 setAccountAuthenticatorResult(intent.getExtras());
 			 setResult(RESULT_CANCELED, intent);
 			 finish();  	    		  
