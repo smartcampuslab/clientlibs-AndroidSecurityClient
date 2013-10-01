@@ -48,11 +48,9 @@ public class AuthenticatorActivity  extends AuthActivity {
 	public static final String PARAM_CONFIRM_CREDENTIALS = "confirmCredentials";
     public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";
 
-	private AccountManager mAccountManager;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-      mAccountManager = AccountManager.get(this);
       super.onCreate(savedInstanceState);
     }
 
@@ -113,21 +111,22 @@ public class AuthenticatorActivity  extends AuthActivity {
 		@Override
 		public void onTokenAcquired(UserData data) {
 			 final Account account = new Account(Constants.getAccountName(AuthenticatorActivity.this), Constants.getAccountType(AuthenticatorActivity.this));
+			 AccountManager mAccountManager = AccountManager.get(getApplicationContext());
 			 Bundle dataBundle = new Bundle();
 			 try {
 				dataBundle.putString(AccountManager.KEY_USERDATA, data.toJSON().toString());
 			} catch (JSONException e1) {
 				Log.e(AuthenticatorActivity.class.getName(), "Failed to write UserData: "+e1.getMessage());
 			}
-			 Account[] accounts = mAccountManager.getAccountsByType(account.type);
-			 if (accounts != null) {
-				for (int i = 0; i < accounts.length; i++) {
-					mAccountManager.removeAccount(accounts[i], null, null);
-				}
-			 }
+//			 Account[] accounts = mAccountManager.getAccountsByType(account.type);
+//			 if (accounts != null) {
+//				for (int i = 0; i < accounts.length; i++) {
+//					mAccountManager.removeAccount(accounts[i], null, null);
+//				}
+//			 }
 			 mAccountManager.addAccountExplicitly(account, null, dataBundle);
 			 
-			 accounts = mAccountManager.getAccountsByType(account.type);
+//			 accounts = mAccountManager.getAccountsByType(account.type);
 			 
 	         ContentResolver.setSyncAutomatically(account,ContactsContract.AUTHORITY, true);
 	          
@@ -137,7 +136,12 @@ public class AuthenticatorActivity  extends AuthActivity {
 		    		 request.getStringExtra(Constants.KEY_AUTHORITY) : Constants.AUTHORITY_DEFAULT;
 				 
 		     mAccountManager.setAuthToken(account, authority, data.getToken());
-		     if (request.getStringExtra(Constants.KEY_AUTHORITY).equals(Constants.TOKEN_TYPE_ANONYMOUS)) mAccountManager.setAuthToken(account, Constants.TOKEN_TYPE_ANONYMOUS, data.getToken());
+		     if (request.getStringExtra(Constants.KEY_AUTHORITY).equals(Constants.TOKEN_TYPE_ANONYMOUS)) {
+		    	 mAccountManager.setAuthToken(account, Constants.TOKEN_TYPE_ANONYMOUS, data.getToken());
+				 mAccountManager.setUserData(account, Constants.KEY_AUTHORITY, Constants.TOKEN_TYPE_ANONYMOUS);
+		     } else {
+				 mAccountManager.setUserData(account, Constants.KEY_AUTHORITY, authority);
+		     }
 
 			 final Intent intent = new Intent();
 			 intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, account.name);

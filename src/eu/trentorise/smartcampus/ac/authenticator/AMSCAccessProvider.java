@@ -165,7 +165,7 @@ public class AMSCAccessProvider implements SCAccessProvider {
 //		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		AccountManager am = AccountManager.get(context);
 		am.invalidateAuthToken(Constants.getAccountType(context), readToken(context, inAuthority));
-		am.removeAccount(new Account(Constants.getAccountName(context), Constants.getAccountType(context)), null, null);
+//		am.removeAccount(new Account(Constants.getAccountName(context), Constants.getAccountType(context)), null, null);
 	}
 
 	@Override
@@ -227,11 +227,11 @@ public class AMSCAccessProvider implements SCAccessProvider {
 
 	@Override
 	public UserData readUserData(Context ctx, String inAuthority) {
-		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
 		AccountManager am = AccountManager.get(ctx);
 		Account account = new Account(Constants.getAccountName(ctx), Constants.getAccountType(ctx));
-		String token = am.peekAuthToken(account, authority);
-		if (token == null) return null;
+//		final String authority = inAuthority == null ? Constants.AUTHORITY_DEFAULT : inAuthority;
+//		String token = am.peekAuthToken(account, authority);
+//		if (token == null) return null;
 		String userDataString = am.getUserData(account, AccountManager.KEY_USERDATA);
 		if (userDataString == null) return null;
 		try {
@@ -243,9 +243,10 @@ public class AMSCAccessProvider implements SCAccessProvider {
 
 	@Override
 	public boolean isUserAnonymous(Context ctx) {
-		UserData data = readUserData(ctx, Constants.TOKEN_TYPE_ANONYMOUS);
-		if (data == null)  return false;
-		return data.getAttributes()== null || (data.getAttributes().size() == 1 && data.getAttributes().get(0).getAuthority().getName().equals(Constants.TOKEN_TYPE_ANONYMOUS));
+		AccountManager am = AccountManager.get(ctx);
+		Account account = new Account(Constants.getAccountName(ctx), Constants.getAccountType(ctx));
+		String authority = am.getUserData(account, Constants.KEY_AUTHORITY);
+		return Constants.TOKEN_TYPE_ANONYMOUS.equals(authority);
 	}
 
 	
