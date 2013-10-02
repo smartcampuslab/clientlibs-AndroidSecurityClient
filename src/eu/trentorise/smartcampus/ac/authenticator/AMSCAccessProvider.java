@@ -44,6 +44,39 @@ import eu.trentorise.smartcampus.ac.model.UserData;
  *
  */
 public class AMSCAccessProvider implements SCAccessProvider {
+
+	private class Callback implements AccountManagerCallback<Bundle> {
+		
+		private String authority;
+		private Activity activity;
+
+		
+		/**
+		 * @param authority
+		 * @param activity
+		 */
+		public Callback(String authority, Activity activity) {
+			super();
+			this.authority = authority;
+			this.activity = activity;
+		}
+
+
+		@Override
+		public void run(AccountManagerFuture<Bundle> result) {
+			Bundle bundle = null;
+			try {
+				bundle = result.getResult();
+				Intent launch = (Intent) bundle.get(AccountManager.KEY_INTENT);
+				if (launch != null) {
+						launch.putExtra(Constants.KEY_AUTHORITY, authority);
+						activity.startActivityForResult(launch, SC_AUTH_ACTIVITY_REQUEST_CODE);
+				}
+			} catch (Exception e) {
+				return;
+			}
+		}
+	}	
 	
 	@Override
 	public String readToken(Context ctx, String inAuthority) {
@@ -73,28 +106,12 @@ public class AMSCAccessProvider implements SCAccessProvider {
 		if (token == null)
 		{
 			final Account a = new Account(Constants.getAccountName(activity), Constants.getAccountType(activity));
-			am.getAuthToken(a, authority, false, 
-					new AccountManagerCallback<Bundle>() {
-	
-						@Override
-						public void run(AccountManagerFuture<Bundle> result) {
-							Bundle bundle = null;
-							try {
-								bundle = result.getResult();
-								Intent launch = (Intent) bundle.get(AccountManager.KEY_INTENT);
-								if (launch != null) {
-										launch.putExtra(Constants.KEY_AUTHORITY, authority);
-										activity.startActivityForResult(launch, SC_AUTH_ACTIVITY_REQUEST_CODE);
-//								} else if (bundle.getString(AccountManager.KEY_AUTHTOKEN) != null){
-//									 am.setAuthToken(a, authority, bundle.getString(AccountManager.KEY_AUTHTOKEN));
-//									 am.addAccountExplicitly(a, null, null);
-								}
-							} catch (Exception e) {
-								return;
-							}
-						}
-					}
-			, null);
+			Account[] accounts = am.getAccountsByType(Constants.getAccountType(activity));
+			if (accounts == null || accounts.length == 0) {
+				am.addAccount(Constants.getAccountType(activity), authority, null, null, null, new Callback(authority, activity), null);
+			} else {
+				am.getAuthToken(a, authority, null, null, new Callback(authority, activity), null);
+			}
 			return null;
 		}
 		return token;		
@@ -184,7 +201,8 @@ public class AMSCAccessProvider implements SCAccessProvider {
 		am.getAuthToken(
 				new Account(Constants.getAccountName(activity), Constants.getAccountType(activity)), 
 				authority, 
-				false,
+				null,
+				null,
 				new AccountManagerCallback<Bundle>() {
 					@Override
 					public void run(AccountManagerFuture<Bundle> result) {
