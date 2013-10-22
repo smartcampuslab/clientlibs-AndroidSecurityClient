@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
@@ -30,6 +31,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
+
+import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
+import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.android.gms.common.AccountPicker;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+
 import eu.trentorise.smartcampus.ac.AuthActivity;
 import eu.trentorise.smartcampus.ac.AuthListener;
 import eu.trentorise.smartcampus.ac.Constants;
@@ -47,7 +55,9 @@ import eu.trentorise.smartcampus.ac.network.RemoteConnector;
 public class AuthenticatorActivity  extends AuthActivity {
 	public static final String PARAM_CONFIRM_CREDENTIALS = "confirmCredentials";
     public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";
-
+	private static final int RC_ACCOUNT_PICK = 200;
+	private final static String USERINFO_SCOPE =    "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email";
+	protected static final int RC_AUTH = 201;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,51 +69,148 @@ public class AuthenticatorActivity  extends AuthActivity {
 	     Intent request = getIntent();
 	     String authTokenType = request.getStringExtra(Constants.KEY_AUTHORITY)!=null ? 
 	    		 request.getStringExtra(Constants.KEY_AUTHORITY) : Constants.AUTHORITY_DEFAULT;
-    	if (Constants.TOKEN_TYPE_ANONYMOUS.equals(authTokenType)) {
-    		new AsyncTask<Void, Void, UserData>() {
-    			private ProgressDialog progress = null;
 
-				protected void onPostExecute(UserData result) {
-					if (progress != null) {
-						try {
-							progress.cancel();
-						} catch (Exception e) {
-							Log.w(getClass().getName(),"Problem closing progress dialog: "+e.getMessage());
-						}
-					}
-					if (result != null && result.getToken() != null) {
-						getAuthListener().onTokenAcquired(result);
-					} else {
-						getAuthListener().onAuthFailed("Failed to create anonymous account");
-					}
-					// TODO
-				}
-				@Override
-				protected void onPreExecute() {
-					progress  = ProgressDialog.show(AuthenticatorActivity.this, "", AuthenticatorActivity.this.getString(R.string.auth_in_progress), true);
-					super.onPreExecute();
-				}
-
-				@Override
-				protected UserData doInBackground(Void... params) {
-					try {
-						return RemoteConnector.createAnonymousUser(Constants.getAuthUrl(AuthenticatorActivity.this), new DeviceUuidFactory(AuthenticatorActivity.this).getDeviceUuid().toString());
-					} catch (NameNotFoundException e) {
-						Log.e(Authenticator.class.getName(), "Failed to create anonymous user: "+ e.getMessage());
-						return null;
-					}
-				}
-			}.execute();
+	     if (Constants.TOKEN_TYPE_ANONYMOUS.equals(authTokenType)) {
+    		new AnonymAccountAsyncTask().execute();
     	} else { 
-    		super.setUp();
+			AccountManager mAccountManager = AccountManager.get(getApplicationContext());
+			Account[] accounts = mAccountManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+			if (accounts == null || accounts.length != 1) {
+				Intent intent = AccountPicker.newChooseAccountIntent(
+						null, 
+						null, 
+						new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE}, 
+						false, null, 
+						null, 
+						null, 
+						null);
+				startActivityForResult(intent, RC_ACCOUNT_PICK);
+			} else {
+				final Account a = accounts[0];
+				new ExtAccountAsyncTask().execute(a.name);
+			}
+//    		super.setUp();
     	}
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == RC_ACCOUNT_PICK && resultCode == RESULT_OK) {
+	         final String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+				try {
+					new ExtAccountAsyncTask().execute(accountName);
+				} catch (Exception e) {
+					super.setUp();
+					
+				}
+	   } else if (requestCode == RC_AUTH  && resultCode == RESULT_OK) {
+		   setUp();
+	   } else {
+		   getAuthListener().onAuthFailed("user failure");;
+	   }	
+	}
 
 
 	@Override
 	protected AuthListener getAuthListener() {
 		return new AMAuthListener();
+	}
+
+	/**
+	 * @author raman
+	 *
+	 */
+	private class AnonymAccountAsyncTask extends
+			AsyncTask<Void, Void, UserData> {
+		private ProgressDialog progress = null;
+
+		@Override
+		protected UserData doInBackground(Void... params) {
+			try {
+				return RemoteConnector.createAnonymousUser(Constants.getAuthUrl(AuthenticatorActivity.this), new DeviceUuidFactory(AuthenticatorActivity.this).getDeviceUuid().toString());
+			} catch (NameNotFoundException e) {
+				Log.e(Authenticator.class.getName(), "Failed to create anonymous user: "+ e.getMessage());
+				return null;
+			}
+		}
+
+		protected void onPostExecute(UserData result) {
+			if (progress != null) {
+				try {
+					progress.cancel();
+				} catch (Exception e) {
+					Log.w(getClass().getName(),"Problem closing progress dialog: "+e.getMessage());
+				}
+			}
+			if (result != null && result.getToken() != null) {
+				getAuthListener().onTokenAcquired(result);
+			} else {
+				getAuthListener().onAuthFailed("Failed to create account");
+			}
+		}
+
+		@Override
+		protected void onPreExecute() {
+			progress  = ProgressDialog.show(AuthenticatorActivity.this, "", AuthenticatorActivity.this.getString(R.string.auth_in_progress), true);
+			super.onPreExecute();
+		}
+
+	}
+
+	private class ExtAccountAsyncTask extends
+			AsyncTask<String, Void, UserData> {
+		private ProgressDialog progress = null;
+		private Exception e = null;
+
+		@Override
+		protected UserData doInBackground(String... params) {
+			try {
+				String token = GoogleAuthUtil.getToken(AuthenticatorActivity.this, params[0], "oauth2:" + USERINFO_SCOPE);
+				return RemoteConnector.createUserWithToken(Constants.getAuthUrl(AuthenticatorActivity.this), "googleext", token);
+			} catch (Exception e) {
+				Log.e(Authenticator.class.getName(), "Failed to create user: "+ e.getMessage());
+		        this.e = e;
+				return null;
+			}
+		}
+
+		protected void onPostExecute(UserData result) {
+			if (progress != null) {
+				try {
+					progress.cancel();
+				} catch (Exception e) {
+					Log.w(getClass().getName(),
+							"Problem closing progress dialog: "
+									+ e.getMessage());
+				}
+			}
+			if (result != null && result.getToken() != null) {
+				getAuthListener().onTokenAcquired(result);
+			} else if (e != null){
+				if (e instanceof GooglePlayServicesAvailabilityException) {
+			         Dialog alert = GooglePlayServicesUtil.getErrorDialog(
+				             ((GooglePlayServicesAvailabilityException)e).getConnectionStatusCode(),
+				             AuthenticatorActivity.this,
+				             RC_AUTH);
+			         alert.show();
+				} else if (e instanceof UserRecoverableAuthException) {
+			          AuthenticatorActivity.this.startActivityForResult(
+			                  ((UserRecoverableAuthException)e).getIntent(),
+			                  RC_AUTH);
+				}
+			} else {
+				getAuthListener().onAuthFailed("Failed to create account");
+			}
+		}
+
+		@Override
+		protected void onPreExecute() {
+			progress = ProgressDialog.show(AuthenticatorActivity.this, "",
+					AuthenticatorActivity.this
+							.getString(R.string.auth_in_progress), true);
+			super.onPreExecute();
+		}
+
 	}
 
 	private class AMAuthListener implements AuthListener {

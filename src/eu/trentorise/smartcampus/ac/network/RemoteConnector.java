@@ -202,4 +202,38 @@ public class RemoteConnector {
 
 	}
 
+	/**
+	 * @param authUrl
+	 * @param token
+	 * @param token 
+	 * @return
+	 */
+	public static UserData createUserWithToken(String service, String authority, String token) {
+        String requestString = service + "/getToken/"+authority;
+        requestString += "?token="+token;
+		final HttpGet request = new HttpGet(requestString);
+		// HTTP parameters stores header etc.
+		final HttpParams params = new BasicHttpParams();
+		HttpClientParams.setRedirecting(params, false);
+        request.setParams(params);
+        request.setHeader("Accept", "application/json");
+		String accessCode = null;
+        try {
+			final HttpResponse resp = getHttpClient().execute(request);
+			Header locationHeader = resp.getFirstHeader("location");
+			if (locationHeader != null && locationHeader.getValue().indexOf('#') > 0) {
+				accessCode = locationHeader.getValue().substring(locationHeader.getValue().indexOf('#')+1);
+			}
+			if ((accessCode != null) && (accessCode.length() > 0)) {
+			    return validateAccessCode(service, accessCode);
+			} else {
+			    Log.e(TAG, "Error creating anonymous: http code " + resp.getStatusLine());
+			    return null;
+			}
+		} catch (Exception e) {
+		    Log.e(TAG, "Error creating anonymous: " + e.getMessage());
+			return null;
+		}
+	}
+
 }
