@@ -59,6 +59,8 @@ public class AuthenticatorActivity  extends AuthActivity {
 	private final static String USERINFO_SCOPE =    "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email";
 	protected static final int RC_AUTH = 201;
 	
+	private String mAccountName = null;
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
       super.onCreate(savedInstanceState);
@@ -75,7 +77,7 @@ public class AuthenticatorActivity  extends AuthActivity {
     	} else { 
 			AccountManager mAccountManager = AccountManager.get(getApplicationContext());
 			Account[] accounts = mAccountManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-			if (accounts == null || accounts.length != 1) {
+			if (mAccountName == null && (accounts == null || accounts.length != 1)) {
 				Intent intent = AccountPicker.newChooseAccountIntent(
 						null, 
 						null, 
@@ -86,8 +88,7 @@ public class AuthenticatorActivity  extends AuthActivity {
 						null);
 				startActivityForResult(intent, RC_ACCOUNT_PICK);
 			} else {
-				final Account a = accounts[0];
-				new ExtAccountAsyncTask().execute(a.name);
+				new ExtAccountAsyncTask().execute(mAccountName != null ? mAccountName : accounts[0].name);
 			}
 //    		super.setUp();
     	}
@@ -96,17 +97,12 @@ public class AuthenticatorActivity  extends AuthActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == RC_ACCOUNT_PICK && resultCode == RESULT_OK) {
-	         final String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-				try {
-					new ExtAccountAsyncTask().execute(accountName);
-				} catch (Exception e) {
-					super.setUp();
-					
-				}
-	   } else if (requestCode == RC_AUTH  && resultCode == RESULT_OK) {
-		   setUp();
+			mAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+			new ExtAccountAsyncTask().execute(mAccountName);
+		} else if (requestCode == RC_AUTH  && resultCode == RESULT_OK) {
+			setUp();
 	   } else {
-		   getAuthListener().onAuthFailed("user failure");;
+		   getAuthListener().onAuthFailed("user failure");
 	   }	
 	}
 
