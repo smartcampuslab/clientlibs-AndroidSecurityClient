@@ -23,6 +23,8 @@ import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.IntentSender.SendIntentException;
@@ -36,6 +38,7 @@ import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import eu.trentorise.smartcampus.ac.AuthActivity;
@@ -75,6 +78,22 @@ public class AuthenticatorActivity  extends AuthActivity {
 	     if (Constants.TOKEN_TYPE_ANONYMOUS.equals(authTokenType)) {
     		new AnonymAccountAsyncTask().execute();
     	} else { 
+    		int code = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+    		if (code != ConnectionResult.SUCCESS) {
+		         Dialog alert = GooglePlayServicesUtil.getErrorDialog(
+			             code,
+			             AuthenticatorActivity.this,
+			             RC_AUTH,
+			             new OnCancelListener() {
+							@Override
+							public void onCancel(DialogInterface dialog) {
+								getAuthListener().onAuthCancelled();
+							}
+						});
+		         alert.show();
+    			return;
+    		}
+    		
 			AccountManager mAccountManager = AccountManager.get(getApplicationContext());
 			Account[] accounts = mAccountManager.getAccountsByType(GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
 			if (mAccountName == null && (accounts == null || accounts.length != 1)) {
